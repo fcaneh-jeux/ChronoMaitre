@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="HurryUpDavid.Pages.GamePage">
+
+    <VerticalStackLayout Padding="20">
+
+        <Label
+            Text="Game Page"
+            FontSize="30"
+            HorizontalOptions="Center" />
+        
+        <Label Text="{Binding TurnDuration}" FontSize="20" HorizontalOptions="Center" />
+
+        <Button Text="Start" Clicked="OnStartClicked"/>
+        <Button Text="next" Clicked="OnNextClicked"/>
+
+        <Label x:Name="TimerLabel"/>
+        <Label x:Name="PlayerLabel"/>
+
+        <HorizontalStackLayout x:Name="PlayersLayout" HorizontalOptions="Center" Spacing="10" Margin="0,20,0,0"/> 
+
+
+    </VerticalStackLayout>
+
+</ContentPage>
