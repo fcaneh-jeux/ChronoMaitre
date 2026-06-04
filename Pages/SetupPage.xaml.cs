@@ -18,6 +18,6 @@ public partial class SetupPage : ContentPage
 			TurnDuration= int.Parse(TimeEntry.Text)
 		};
 
-		await Navigation.PushAsync(new GamePage(setttings));
+		await Navigation.PushAsync(new ColorSelectionPage(setttings));
     }
 }

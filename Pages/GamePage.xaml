@@ -11,9 +11,17 @@
             Text="Game Page"
             FontSize="30"
             HorizontalOptions="Center" />
+        
+        <Label Text="{Binding TurnDuration}" FontSize="20" HorizontalOptions="Center" />
 
-        <Label Text="{Binding PlayerCount}" FontSize="30" HorizontalOptions="Center" />
-        <Label Text="{Binding TurnDuration}" FontSize="30" HorizontalOptions="Center" />
+        <Button Text="Start" Clicked="OnStartClicked"/>
+        <Button Text="next" Clicked="OnNextClicked"/>
+
+        <Label x:Name="TimerLabel"/>
+        <Label x:Name="PlayerLabel"/>
+
+        <HorizontalStackLayout x:Name="PlayersLayout" HorizontalOptions="Center" Spacing="10" Margin="0,20,0,0"/> 
+
 
     </VerticalStackLayout>
 
