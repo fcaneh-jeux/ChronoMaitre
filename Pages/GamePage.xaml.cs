@@ -2,6 +2,8 @@ using System.Diagnostics;
 using HurryUpDavid.Models;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
+using Plugin.Maui.Audio;
+using Microsoft.Maui.Storage;
 
 namespace HurryUpDavid.Pages;
 
@@ -15,6 +17,9 @@ public partial class GamePage : ContentPage
     private CancellationTokenSource _cancellationTokenSource;
     private readonly GameSettings _gameSettings;
     private CircleGameDrawable _circleGameDrawable;
+    private IAudioManager _audioManager;
+    private IAudioPlayer _ambientPlayer;
+    private IAudioPlayer _breathingPlayer;
 
     public GamePage(GameSettings gameSettings, List<Color> playerColors)
     {
@@ -22,7 +27,7 @@ public partial class GamePage : ContentPage
         _gameSettings = gameSettings;
         _playerColors = playerColors;
 
-        _isRunning = false; // Le timer ne démarre pas tout seul
+        _isRunning = false;
         _isPaused = false;
         _remainingSeconds = _gameSettings.TurnDuration;
 
@@ -34,41 +39,90 @@ public partial class GamePage : ContentPage
             CurrentColor = _playerColors[0]
         };
         GameCanvas.Drawable = _circleGameDrawable;
+
+        // Initialisation de l'audio
+        _audioManager = AudioManager.Current;
+        LoadSoundTheme();
     }
 
-    // Méthode appelée quand on clique sur le cercle
+    private async void LoadSoundTheme()
+    {
+        try
+        {
+            _ambientPlayer?.Dispose();
+            _breathingPlayer?.Dispose();
+
+            switch (_gameSettings.SoundTheme)
+            {
+                case "Clochettes":
+                    var bellsStream = await FileSystem.OpenAppPackageFileAsync("Audios/bells.wav");
+                    if (bellsStream != null)
+                    {
+                        _ambientPlayer = _audioManager.CreatePlayer(bellsStream);
+                        _ambientPlayer.Loop = false;
+                    }
+                    break;
+
+                case "Respiration":
+                    var breathingStream = await FileSystem.OpenAppPackageFileAsync("Audios/breathing.wav");
+                    if (breathingStream != null)
+                    {
+                        _ambientPlayer = _audioManager.CreatePlayer(breathingStream);
+                        _ambientPlayer.Loop = false;
+                    }
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"❌ Erreur audio: {ex.Message}");
+        }
+    }
+
     private void OnCircleTapped(object sender, EventArgs e)
     {
-        if (!_isRunning) return; // Ne rien faire si le timer n'est pas démarré
-
+        if (!_isRunning) return;
+        if (_isPaused) return;
         OnNextPlayer();
     }
 
-    // Méthode appelée quand on clique sur Pause/Reprise
     private void OnPauseResumeClicked(object sender, EventArgs e)
     {
         if (!_isRunning)
         {
-            // Démarrer le timer
             _isRunning = true;
-            PauseResumeButton.Text = "❚❚";  // Icône Pause (deux barres)
+            PauseResumeButton.Text = "❚❚";
             _cancellationTokenSource = new CancellationTokenSource();
+
+            if (_remainingSeconds <= 10 && _ambientPlayer != null && _gameSettings.SoundTheme != "Aucune")
+            {
+                _ambientPlayer.Play();
+            }
+
             _ = RunTimer(_cancellationTokenSource.Token);
         }
         else
         {
-            // Mettre en pause ou reprendre
             _isPaused = !_isPaused;
 
             if (_isPaused)
             {
-                PauseResumeButton.Text = "▶";  // Icône Play
+                PauseResumeButton.Text = "▶";
                 _cancellationTokenSource?.Cancel();
+                if (_ambientPlayer != null)
+                {
+                    _ambientPlayer.Pause();
+                }
             }
             else
             {
-                PauseResumeButton.Text = "❚❚";  // Icône Pause
+                PauseResumeButton.Text = "❚❚";
                 _cancellationTokenSource = new CancellationTokenSource();
+                
+                if (_remainingSeconds <= 10 && _ambientPlayer != null && _gameSettings.SoundTheme != "Aucune")
+                {
+                    _ambientPlayer.Play();
+                }
                 _ = RunTimer(_cancellationTokenSource.Token);
             }
         }
@@ -86,27 +140,30 @@ public partial class GamePage : ContentPage
     {
         _isRunning = true;
         _remainingSeconds = _gameSettings.TurnDuration;
-
         _cancellationTokenSource = new CancellationTokenSource();
         await RunTimer(_cancellationTokenSource.Token);
     }
 
     private void OnNextPlayer()
     {
-        // Arrêter le timer actuel
         _cancellationTokenSource?.Cancel();
 
-        // Passer au joueur suivant
+        _isPaused = false;
+
         _currentPlayerIndex = (_currentPlayerIndex + 1) % _gameSettings.PlayerCount;
         _remainingSeconds = _gameSettings.TurnDuration;
-
         _circleGameDrawable.GlowIntensities.Clear();
         RenderRefresh();
 
-        // Relancer le timer pour le nouveau joueur
         _isRunning = true;
         _cancellationTokenSource = new CancellationTokenSource();
-        _ = RunTimer(_cancellationTokenSource.Token); // Fire-and-forget
+
+        if (_ambientPlayer != null)
+        {
+            _ambientPlayer.Stop();
+            _ambientPlayer.Seek(0);
+        }
+        _ = RunTimer(_cancellationTokenSource.Token);
     }
 
     private async Task RunTimer(CancellationToken cancellationToken)
@@ -120,6 +177,12 @@ public partial class GamePage : ContentPage
         bool isPulsing = false;
         float pulseDirection = 0.8f;
         float pulseProgress = 0f;
+        bool isSoundPlayed = false;
+
+        if (_ambientPlayer != null && _ambientPlayer.IsPlaying && _remainingSeconds <= 10)
+        {
+            isSoundPlayed = true; // Marque le son comme joué si le timer est déjà dans les 10 secondes et que le son est en train de jouer
+        }
 
         while (_isRunning && !cancellationToken.IsCancellationRequested)
         {
@@ -144,7 +207,7 @@ public partial class GamePage : ContentPage
                 glowIntensities.Clear();
             }
 
-            // Pulsation dans les 10 dernières secondes
+            // Pulsation et sons dans les 10 dernières secondes
             if (_remainingSeconds <= 10)
             {
                 isPulsing = true;
@@ -159,11 +222,21 @@ public partial class GamePage : ContentPage
                     pulseProgress = 0f;
                     pulseDirection = 0.8f;
                 }
+
+                if (_remainingSeconds == 10 && !isSoundPlayed && _ambientPlayer != null && _gameSettings.SoundTheme != "Aucune")
+                {
+                    _ambientPlayer.Stop(); // Arrête le son au cas où il serait déjà en train de jouer
+                    _ambientPlayer.Seek(0); // Rembobine au début
+                    _ambientPlayer.Play(); // Lance le son
+                    isSoundPlayed = true; // Marque le son comme joué
+                    System.Diagnostics.Debug.WriteLine($"🔊 Son joué à 10 secondes pour le joueur {_currentPlayerIndex + 1} !");
+                }
             }
             else
             {
                 isPulsing = false;
                 pulseProgress = 0f;
+                // Ne pas réinitialiser isSoundPlayed ici (c'est fait dans OnNextPlayer)
             }
 
             _circleGameDrawable.GlowIntensities = glowIntensities;
