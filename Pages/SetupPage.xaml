@@ -39,7 +39,17 @@
                 x:Name="TimeEntry"
                 Keyboard="Numeric"
                 Text="90" />
-
+            <Label Text="Ambiance sonore" />
+            <Picker
+                x:Name="SoundThemePicker"
+                Title="Choisir une ambiance"
+                HorizontalOptions="Center">
+                <Picker.Items>
+                    <x:String>Aucune</x:String>
+                    <x:String>Clochettes</x:String>
+                    <x:String>Respiration</x:String>
+                </Picker.Items>
+            </Picker>
             <Button
                 Text="Démarrer"
                 Clicked="OnStartClicked"

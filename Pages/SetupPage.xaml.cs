@@ -39,11 +39,14 @@ public partial class SetupPage : ContentPage
             TimeEntry.Text = "90";
         }
 
+        string selectedSoundTheme = SoundThemePicker.SelectedItem?.ToString() ?? "Aucune";
+
         // Créer les paramètres du jeu
         GameSettings gameSettings = new GameSettings
         {
             PlayerCount = playerCount,
-            TurnDuration = turnDuration
+            TurnDuration = turnDuration,
+            SoundTheme = selectedSoundTheme,
         };
 
         // Naviguer vers la page de sélection des couleurs

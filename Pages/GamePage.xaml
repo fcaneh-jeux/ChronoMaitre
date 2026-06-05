@@ -8,7 +8,14 @@
     <Grid>
         <!-- Bouton de sortie en haut à droite -->
         <Button
-            Style="{StaticResource ExitButtonStyle}"
+            x:Name="ExitButton"
+            Text="✕"
+            WidthRequest="40"
+            HeightRequest="40"
+            CornerRadius="20"
+            BackgroundColor="Transparent"
+            TextColor="White"
+            FontSize="20"
             Clicked="OnExitClicked"
             Grid.Row="0"
             Grid.Column="1"
@@ -23,57 +30,56 @@
             VerticalOptions="Center"
             Spacing="20">
 
-            <!-- Cercle + Timer/Nom du joueur (tout est cliquable) -->
+            <!-- Cercle + Timer/Nom du joueur -->
             <Grid
-            WidthRequest="400"
-            HeightRequest="400"
-            HorizontalOptions="Center">
-                <!-- Cercle (GraphicsView) -->
-                <GraphicsView
-                x:Name="GameCanvas"
                 WidthRequest="400"
                 HeightRequest="400"
-                HorizontalOptions="Center"
-                VerticalOptions="Center">
+                HorizontalOptions="Center">
+                <!-- Cercle (GraphicsView) -->
+                <GraphicsView
+                    x:Name="GameCanvas"
+                    WidthRequest="400"
+                    HeightRequest="400"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center">
                     <GraphicsView.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnCircleTapped" />
                     </GraphicsView.GestureRecognizers>
                 </GraphicsView>
 
-                <!-- Timer et nom du joueur (au centre du cercle, aussi cliquable) -->
+                <!-- Timer et nom du joueur (au centre du cercle) -->
                 <VerticalStackLayout
-                HorizontalOptions="Center"
-                VerticalOptions="Center"
-                Spacing="0">    
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    Spacing="0">
                     <VerticalStackLayout.GestureRecognizers>
-                        <!-- Ajout du TapGestureRecognizer pour le centre -->
                         <TapGestureRecognizer Tapped="OnCircleTapped" />
                     </VerticalStackLayout.GestureRecognizers>
-                    <Label x:Name="TimerLabel"
-                    FontSize="70"
-                    FontAttributes="Bold"
-                    HorizontalTextAlignment="Center"
-                    TextColor="White" />
-                        <Label x:Name="PlayerLabel"
-                    FontSize="18"
-                    HorizontalTextAlignment="Center"
-                    TextColor="White" />    
+                    <Label
+                        x:Name="TimerLabel"
+                        FontSize="70"
+                        FontAttributes="Bold"
+                        HorizontalTextAlignment="Center"
+                        TextColor="White" />
+                    <Label
+                        x:Name="PlayerLabel"
+                        FontSize="18"
+                        HorizontalTextAlignment="Center"
+                        TextColor="White" />
                 </VerticalStackLayout>
             </Grid>
 
             <!-- Bouton Pause/Reprise (sous le cercle) -->
             <Button
                 x:Name="PauseResumeButton"
-                Text="▶"  
+                Text="▶"
                 WidthRequest="60"
                 HeightRequest="60"
                 CornerRadius="30"
                 BackgroundColor="Transparent"
                 TextColor="White"
-                BorderColor="Transparent"
                 Clicked="OnPauseResumeClicked"
-                HorizontalOptions="Center"
-                FontSize="24" />
+                HorizontalOptions="Center"/>
         </VerticalStackLayout>
     </Grid>
 </ContentPage>
