@@ -1,28 +1,79 @@
 <?xml version="1.0" encoding="utf-8" ?>
-
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="HurryUpDavid.Pages.GamePage">
+    x:Class="HurryUpDavid.Pages.GamePage"
+    BackgroundColor="DarkGray">
 
-    <VerticalStackLayout Padding="20">
+    <Grid>
+        <!-- Bouton de sortie en haut à droite -->
+        <Button
+            Style="{StaticResource ExitButtonStyle}"
+            Clicked="OnExitClicked"
+            Grid.Row="0"
+            Grid.Column="1"
+            HorizontalOptions="End"
+            VerticalOptions="Start"
+            Margin="10" />
 
-        <Label
-            Text="Game Page"
-            FontSize="30"
-            HorizontalOptions="Center" />
-        
-        <Label Text="{Binding TurnDuration}" FontSize="20" HorizontalOptions="Center" />
+        <!-- Conteneur principal -->
+        <VerticalStackLayout
+            Grid.Row="1"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            Spacing="20">
 
-        <Button Text="Start" Clicked="OnStartClicked"/>
-        <Button Text="next" Clicked="OnNextClicked"/>
+            <!-- Cercle + Timer/Nom du joueur (tout est cliquable) -->
+            <Grid
+            WidthRequest="400"
+            HeightRequest="400"
+            HorizontalOptions="Center">
+                <!-- Cercle (GraphicsView) -->
+                <GraphicsView
+                x:Name="GameCanvas"
+                WidthRequest="400"
+                HeightRequest="400"
+                HorizontalOptions="Center"
+                VerticalOptions="Center">
+                    <GraphicsView.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnCircleTapped" />
+                    </GraphicsView.GestureRecognizers>
+                </GraphicsView>
 
-        <Label x:Name="TimerLabel"/>
-        <Label x:Name="PlayerLabel"/>
+                <!-- Timer et nom du joueur (au centre du cercle, aussi cliquable) -->
+                <VerticalStackLayout
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                Spacing="0">    
+                    <VerticalStackLayout.GestureRecognizers>
+                        <!-- Ajout du TapGestureRecognizer pour le centre -->
+                        <TapGestureRecognizer Tapped="OnCircleTapped" />
+                    </VerticalStackLayout.GestureRecognizers>
+                    <Label x:Name="TimerLabel"
+                    FontSize="70"
+                    FontAttributes="Bold"
+                    HorizontalTextAlignment="Center"
+                    TextColor="White" />
+                        <Label x:Name="PlayerLabel"
+                    FontSize="18"
+                    HorizontalTextAlignment="Center"
+                    TextColor="White" />    
+                </VerticalStackLayout>
+            </Grid>
 
-        <HorizontalStackLayout x:Name="PlayersLayout" HorizontalOptions="Center" Spacing="10" Margin="0,20,0,0"/> 
-
-
-    </VerticalStackLayout>
-
+            <!-- Bouton Pause/Reprise (sous le cercle) -->
+            <Button
+                x:Name="PauseResumeButton"
+                Text="▶"  
+                WidthRequest="60"
+                HeightRequest="60"
+                CornerRadius="30"
+                BackgroundColor="Transparent"
+                TextColor="White"
+                BorderColor="Transparent"
+                Clicked="OnPauseResumeClicked"
+                HorizontalOptions="Center"
+                FontSize="24" />
+        </VerticalStackLayout>
+    </Grid>
 </ContentPage>

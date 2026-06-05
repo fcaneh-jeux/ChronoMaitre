@@ -3,37 +3,48 @@
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="HurryUpDavid.Pages.SetupPage">
+    x:Class="HurryUpDavid.Pages.SetupPage"
+    BackgroundColor="DarkGray">
 
-    <VerticalStackLayout
-        Padding="30"
-        Spacing="20">
-
-        <Label
-            Text="Hurry Up David"
-            FontSize="32"
-            HorizontalOptions="Center" />
-
-        <Label
-            Text="Nombre de joueurs" />
-
-        <Entry
-            x:Name="PlayersEntry"
-            Keyboard="Numeric"
-            Text="4" />
-
-        <Label
-            Text="Temps par tour (secondes)" />
-
-        <Entry
-            x:Name="TimeEntry"
-            Keyboard="Numeric"
-            Text="90" />
-
+    <Grid>
+        <!-- Bouton de sortie en haut à droite -->
         <Button
-            Text="Démarrer"
-            Clicked="OnStartClicked" />
+            Style="{StaticResource ExitButtonStyle}"
+            Clicked="OnExitClicked"
+            Grid.Row="0"
+            Grid.Column="1"
+            HorizontalOptions="End"
+            VerticalOptions="Start"
+            Margin="10" />
 
-    </VerticalStackLayout>
+        <!-- Contenu principal -->
+        <VerticalStackLayout
+            Grid.Row="1"
+            Padding="30"
+            Spacing="20">
 
+            <Label
+                Text="Hurry Up David"
+                FontSize="32"
+                HorizontalOptions="Center" />
+
+            <Label Text="Nombre de joueurs (2-8)" />
+            <Entry
+                x:Name="PlayersEntry"
+                Keyboard="Numeric"
+                Text="4" />
+
+            <Label Text="Temps par tour (secondes)" />
+            <Entry
+                x:Name="TimeEntry"
+                Keyboard="Numeric"
+                Text="90" />
+
+            <Button
+                Text="Démarrer"
+                Clicked="OnStartClicked"
+                BackgroundColor="DarkGray"
+                HorizontalOptions="Center" />
+        </VerticalStackLayout>
+    </Grid>
 </ContentPage>
