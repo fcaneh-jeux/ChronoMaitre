@@ -145,6 +145,14 @@ public partial class GamePage : ContentPage
         await RunTimer(_cancellationTokenSource.Token);
     }
 
+    private void OnHomeClicked(object sender, EventArgs e)
+    {
+        _cancellationTokenSource?.Cancel();
+
+        Application.Current.Windows[0].Page =
+            new NavigationPage(new SetupPage());
+    }
+
     private void OnNextPlayer()
     {
         _cancellationTokenSource?.Cancel();

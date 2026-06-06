@@ -7,22 +7,34 @@
     BackgroundColor="DarkGray">
 
     <Grid>
-        <!-- Bouton de sortie en haut à droite -->
-        <Button
-            x:Name="ExitButton"
-            Text="✕"
-            WidthRequest="40"
-            HeightRequest="40"
-            CornerRadius="20"
-            BackgroundColor="Transparent"
-            TextColor="White"
-            FontSize="20"
-            Clicked="OnExitClicked"
-            Grid.Row="0"
-            Grid.Column="1"
+        <!-- Bouton en haut à droite -->
+        <HorizontalStackLayout
             HorizontalOptions="End"
             VerticalOptions="Start"
-            Margin="10" />
+            Margin="10"
+            Spacing="5">
+
+            <Button
+                Text="⌂"
+                WidthRequest="40"
+                HeightRequest="40"
+                CornerRadius="20"
+                BackgroundColor="Transparent"
+                TextColor="White"
+                FontSize="20"
+                Clicked="OnHomeClicked"/>
+
+            <Button
+                Text="✕"
+                WidthRequest="40"
+                HeightRequest="40"
+                CornerRadius="20"
+                BackgroundColor="Transparent"
+                TextColor="White"
+                FontSize="20"
+                Clicked="OnExitClicked"/>   
+
+        </HorizontalStackLayout>
 
         <!-- Conteneur principal -->
         <VerticalStackLayout
