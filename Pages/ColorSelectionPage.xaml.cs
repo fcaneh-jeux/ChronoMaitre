@@ -30,7 +30,7 @@ public partial class ColorSelectionPage : ContentPage
 
     private void RenderColors()
     {
-        ColorsLayout.Children.Clear();
+        ColorsGrid.Children.Clear();
         foreach (var color in _availableColors)
         {
             var colorBox = new BoxView
@@ -40,12 +40,16 @@ public partial class ColorSelectionPage : ContentPage
                 HeightRequest = 50,
                 CornerRadius = 25,
                 Margin = new Thickness(5),
-                HorizontalOptions = LayoutOptions.Center
+                HorizontalOptions = LayoutOptions.Center,
+                BackgroundColor = Colors.Transparent
             };
             var tapGesture = new TapGestureRecognizer();
             tapGesture.Tapped += (s, e) => OnColorSelected(color);
             colorBox.GestureRecognizers.Add(tapGesture);
-            ColorsLayout.Children.Add(colorBox);
+            int index = _availableColors.IndexOf(color);
+            int row = index / 2;
+            int column = index % 2;
+            ColorsGrid.Add(colorBox, column, row);
         }
     }
 
@@ -72,9 +76,9 @@ public partial class ColorSelectionPage : ContentPage
         }
     }
 
-    private async void GoToGame()
+    private void GoToGame()
     {
-        await Navigation.PushAsync(new GamePage(_gameSettings, _selectedColors));
+        Application.Current.Windows[0].Page = new NavigationPage(new GamePage(_gameSettings, _selectedColors));
     }
 }
 

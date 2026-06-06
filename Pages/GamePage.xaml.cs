@@ -24,6 +24,7 @@ public partial class GamePage : ContentPage
     public GamePage(GameSettings gameSettings, List<Color> playerColors)
     {
         InitializeComponent();
+        
         _gameSettings = gameSettings;
         _playerColors = playerColors;
 

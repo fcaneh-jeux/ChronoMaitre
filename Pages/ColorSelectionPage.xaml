@@ -8,13 +8,29 @@
     <VerticalStackLayout Padding="20" Spacing="20">
 
         <Label x:Name="InstructionLabel"
-               FontSize="20"
-               HorizontalOptions="Center"/>
+            FontSize="20"
+            HorizontalOptions="Center"/>
 
-        <HorizontalStackLayout
-            x:Name="ColorsLayout"
+        <Grid
+            x:Name="ColorsGrid"
             HorizontalOptions="Center"
-            Spacing="10"/>
+            ColumnSpacing="15"
+            RowSpacing="15"
+            Padding="10">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+        </Grid>
 
     </VerticalStackLayout>
 </ContentPage>
