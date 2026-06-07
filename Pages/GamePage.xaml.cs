@@ -161,18 +161,13 @@ public partial class GamePage : ContentPage
         _cancellationTokenSource?.Cancel();
         _isPaused = false;
 
-        // Sauvegarde l'ancienne couleur
         Color previousColor = _playerColors[_currentPlayerIndex];
 
-        // Passe au joueur suivant
         _currentPlayerIndex = (_currentPlayerIndex + 1) % _gameSettings.PlayerCount;
         _remainingSeconds = _gameSettings.TurnDuration;
         Color nextColor = _playerColors[_currentPlayerIndex];
 
-        // ✅ CurrentColor reste l'ancienne couleur (pour le contour hors transition)
-        // ✅ NextColor = nouvelle couleur (pour l'arc pendant la transition)
-        System.Diagnostics.Debug.WriteLine($"ANCIENNE={previousColor} NOUVELLE={nextColor}");
-        _circleGameDrawable.CurrentColor = previousColor;
+        
         _circleGameDrawable.NextColor = nextColor;
         _circleGameDrawable.IsTransitioning = true;
         _circleGameDrawable.TransitionProgress = 0f;
@@ -189,12 +184,10 @@ public partial class GamePage : ContentPage
 
     private async Task AnimateColorTransition()
     {
-        System.Diagnostics.Debug.WriteLine(
-    $"Current={_circleGameDrawable.CurrentColor}  Next={_circleGameDrawable.NextColor}");
         _isTransitionAnimating = true;
         try
         {
-            float duration = 1.0f; // 1 seconde
+            float duration = 1.0f;
             int steps = 30;
             float stepDuration = duration / steps;
             float initialScale = _circleGameDrawable.PulseScale;
@@ -204,20 +197,16 @@ public partial class GamePage : ContentPage
                 float progress = i / (float)steps;
                 _circleGameDrawable.TransitionProgress = progress;
 
-                // Effet de zoom : le cercle grossit puis rétrécit
                 _circleGameDrawable.TransitionScale = 1f + (float)Math.Sin(progress * Math.PI) * 0.12f;
 
-                // Met à jour la couleur du texte avec un alpha progressif
                 Color currentColor = GetCurrentTextColor();
                 float alpha = 0.6f + (0.4f * progress);
                 TimerLabel.TextColor = currentColor.WithAlpha(alpha);
-                PlayerLabel.TextColor = currentColor.WithAlpha(alpha);
-
+                
                 GameCanvas.Invalidate();
                 await Task.Delay((int)(stepDuration * 1000));
             }
 
-            // Transition terminée
             _circleGameDrawable.CurrentColor = _circleGameDrawable.NextColor;
             _circleGameDrawable.NextColor = _circleGameDrawable.CurrentColor;
 
@@ -227,7 +216,6 @@ public partial class GamePage : ContentPage
 
             _circleGameDrawable.GlowIntensities.Clear();
 
-            // Met à jour l'affichage final
             TimerLabel.Text = _remainingSeconds.ToString();
             TimerLabel.TextColor = _playerColors[_currentPlayerIndex];
             PlayerLabel.Text = $"JOUEUR {_currentPlayerIndex + 1}";
@@ -261,7 +249,7 @@ public partial class GamePage : ContentPage
         long lastSecond = 0;
         List<float> glowIntensities = new List<float>();
         const int maxGlowCircles = 5;
-        const float glowFadeInSpeed = 0.05f; // Vitesse plus lente pour un effet progressif
+        const float glowFadeInSpeed = 0.05f; 
 
         bool isPulsing = false;
         float pulseDirection = 0.8f;

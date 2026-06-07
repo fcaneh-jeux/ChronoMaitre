@@ -19,8 +19,6 @@ public partial class SetupPage : ContentPage
         _selectedTimeButton = Time90Button;
         Time90Button.BackgroundColor = _selectedColor;
         Time90Button.Scale = 1.15;
-        //IncreaseTime.TextColor = Colors.Black;
-        //DecreaseTime.TextColor = Colors.Black;
     }
 
     private void OnExitClicked(object sender, EventArgs e)

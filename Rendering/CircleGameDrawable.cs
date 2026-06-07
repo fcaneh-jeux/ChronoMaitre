@@ -20,40 +20,23 @@ public class CircleGameDrawable : IDrawable
 
         if (IsTransitioning)
         {
-            // Cercle complet de l'ancien joueur
+            // Dessine le cercle complet en ANCIENNE couleur surchargé par le serpent (ex: rouge)
             canvas.StrokeColor = NextColor;
             canvas.StrokeSize = 12;
+            canvas.DrawCircle(centerX, centerY, baseRadius);
 
-            canvas.DrawCircle(
-                centerX,
-                centerY,
-                baseRadius);
-
-            // Progression du serpent
+            // Dessine l'arc (serpent) en NOUVELLE couleur qui remplace le cercle (ex: vert)
             float endAngle = -90 + (360f * TransitionProgress);
-
             canvas.StrokeColor = CurrentColor;
             canvas.StrokeSize = 12;
-
-            canvas.DrawArc(
-                centerX - baseRadius,
-                centerY - baseRadius,
-                baseRadius * 2,
-                baseRadius * 2,
-                -90,
-                endAngle,
-                true,
-                false);
+            canvas.DrawArc(centerX - baseRadius, centerY - baseRadius, baseRadius * 2, baseRadius * 2, -90, endAngle, true, false);
         }
         else
         {
             canvas.StrokeColor = CurrentColor;
             canvas.StrokeSize = 12;
 
-            canvas.DrawCircle(
-                centerX,
-                centerY,
-                baseRadius);
+            canvas.DrawCircle(centerX, centerY, baseRadius);
         }
 
         // Glow
@@ -61,23 +44,15 @@ public class CircleGameDrawable : IDrawable
         {
             float glowRadius = baseRadius + ((i + 1) * 10);
 
-            float baseAlpha =
-                (i == GlowIntensities.Count - 1)
-                    ? 0.7f
-                    : 1f;
+            float baseAlpha = (i == GlowIntensities.Count - 1) ? 0.7f : 1f;
 
-            float glowAlpha =
-                baseAlpha * GlowIntensities[i];
+            float glowAlpha = baseAlpha * GlowIntensities[i];
 
-            canvas.StrokeColor =
-                CurrentColor.WithAlpha(glowAlpha);
+            canvas.StrokeColor = CurrentColor.WithAlpha(glowAlpha);
 
             canvas.StrokeSize = 15;
 
-            canvas.DrawCircle(
-                centerX,
-                centerY,
-                glowRadius);
+            canvas.DrawCircle(centerX, centerY, glowRadius);
         }
     }
 
