@@ -14,6 +14,7 @@ public partial class SetupPage : ContentPage
     public SetupPage()
     {
         InitializeComponent();
+
         _playerCount = 4;
         _turnDuration = 90;
         _selectedTimeButton = Time90Button;

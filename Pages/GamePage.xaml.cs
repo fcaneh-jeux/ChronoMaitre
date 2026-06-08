@@ -152,7 +152,7 @@ public partial class GamePage : ContentPage
     private async void OnHomeClicked(object sender, EventArgs e)
     {
         _cancellationTokenSource?.Cancel();
-        await Navigation.PopToRootAsync();
+        Application.Current.Windows[0].Page = new NavigationPage(new SetupPage());
     }
 
     private void OnNextPlayer()
@@ -197,7 +197,7 @@ public partial class GamePage : ContentPage
                 float progress = i / (float)steps;
                 _circleGameDrawable.TransitionProgress = progress;
 
-                _circleGameDrawable.TransitionScale = 1f + (float)Math.Sin(progress * Math.PI) * 0.12f;
+                _circleGameDrawable.TransitionScale = 1f + (float)Math.Sin(progress * Math.PI) * 0.18f;
 
                 Color currentColor = GetCurrentTextColor();
                 float alpha = 0.6f + (0.4f * progress);
@@ -219,8 +219,7 @@ public partial class GamePage : ContentPage
             TimerLabel.Text = _remainingSeconds.ToString();
             TimerLabel.TextColor = _playerColors[_currentPlayerIndex];
             PlayerLabel.Text = $"JOUEUR {_currentPlayerIndex + 1}";
-            PlayerLabel.TextColor = Colors.White;
-
+            PlayerLabel.TextColor = _playerColors[_currentPlayerIndex].WithAlpha(0.8f);
 
             _isRunning = true;
             _ = RunTimer(_cancellationTokenSource.Token);
@@ -249,7 +248,7 @@ public partial class GamePage : ContentPage
         long lastSecond = 0;
         List<float> glowIntensities = new List<float>();
         const int maxGlowCircles = 5;
-        const float glowFadeInSpeed = 0.05f; 
+        const float glowFadeInSpeed = 0.02f; 
 
         bool isPulsing = false;
         float pulseDirection = 0.8f;
@@ -367,7 +366,12 @@ public partial class GamePage : ContentPage
             // Applique à tous les anneaux
             for (int i = 0; i < _circleGameDrawable.GlowIntensities.Count; i++)
             {
-                _circleGameDrawable.GlowIntensities[i] = opacity;
+                float delay = i * 0.15f;
+
+                float localOpacity =
+                    Math.Max(0f, 1f - (progress + delay));
+
+                _circleGameDrawable.GlowIntensities[i] = localOpacity;
             }
 
             GameCanvas.Invalidate();

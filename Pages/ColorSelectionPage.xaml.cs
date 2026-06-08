@@ -15,7 +15,7 @@ public partial class ColorSelectionPage : ContentPage
         Color.FromArgb("#FFEB3B"),  // Jaune
         Color.FromArgb("#9C27B0"),  // Violet foncé
         Color.FromArgb("#FF9800"),  // Orange
-        Color.FromArgb("#424242"),  // Gris foncé (remplace Black)
+        Color.FromArgb("#1A1A1A"),  // Gris foncé (remplace Black)
         Color.FromArgb("#EEEEEE")   // Blanc cassé (remplace White)
     };
 

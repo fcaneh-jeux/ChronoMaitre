@@ -16,7 +16,7 @@ public class CircleGameDrawable : IDrawable
     {
         float centerX = dirtyRect.Center.X;
         float centerY = dirtyRect.Center.Y;
-        float baseRadius = 120 * PulseScale * TransitionScale;
+        float baseRadius = 100 * PulseScale * TransitionScale;
 
         if (IsTransitioning)
         {
@@ -42,15 +42,15 @@ public class CircleGameDrawable : IDrawable
         // Glow
         for (int i = 0; i < GlowIntensities.Count; i++)
         {
-            float glowRadius = baseRadius + ((i + 1) * 10);
+            float glowRadius = baseRadius + (i * 12);
 
-            float baseAlpha = (i == GlowIntensities.Count - 1) ? 0.7f : 1f;
+            float baseAlpha = 1f - (i * 0.15f);
 
             float glowAlpha = baseAlpha * GlowIntensities[i];
 
             canvas.StrokeColor = CurrentColor.WithAlpha(glowAlpha);
 
-            canvas.StrokeSize = 15;
+            canvas.StrokeSize = 12;
 
             canvas.DrawCircle(centerX, centerY, glowRadius);
         }
