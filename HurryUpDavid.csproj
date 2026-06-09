@@ -93,4 +93,9 @@
 	  <Folder Include="Resources\Raw\Audios\" />
 	</ItemGroup>
 
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<AndroidPackageFormats>apk</AndroidPackageFormats>
+		<AndroidKeyStore>false</AndroidKeyStore>
+	</PropertyGroup>
+
 </Project>
