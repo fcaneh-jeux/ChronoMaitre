@@ -4,57 +4,123 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="HurryUpDavid.Pages.SetupPage"
-    BackgroundColor="DarkGray">
+    BackgroundColor="#2F4F4F"
+    NavigationPage.HasNavigationBar="False">
 
     <Grid>
         <!-- Bouton de sortie en haut à droite -->
         <Button
-            Style="{StaticResource ExitButtonStyle}"
+            x:Name="ExitButton"
+            Text="✕"
+            WidthRequest="40"
+            HeightRequest="40"
+            CornerRadius="20"
+            BackgroundColor="#B22222"  
+            TextColor="White"
+            FontSize="20"
             Clicked="OnExitClicked"
             Grid.Row="0"
             Grid.Column="1"
             HorizontalOptions="End"
             VerticalOptions="Start"
-            Margin="10" />
+            Margin="10"
+            ZIndex="10"/>
+        <ScrollView>
+            <!-- Contenu principal -->
+            <VerticalStackLayout
+                Grid.Row="1"
+                Padding="30"
+                Spacing="20">
 
-        <!-- Contenu principal -->
-        <VerticalStackLayout
-            Grid.Row="1"
-            Padding="30"
-            Spacing="20">
+                <Label
+                    Text="Hurry Up David"
+                    FontSize="36"
+                    FontAttributes="Bold"
+                    TextColor="#F5F5F5"
+                    HorizontalOptions="Center" />
 
-            <Label
-                Text="Hurry Up David"
-                FontSize="32"
-                HorizontalOptions="Center" />
+                <Label
+                    Text="👥 Nombre de joueurs"
+                    FontSize="20"
+                    FontAttributes="Bold"
+                    TextColor="#D3D3D3" 
+                    HorizontalOptions="Center" />
 
-            <Label Text="Nombre de joueurs (2-8)" />
-            <Entry
-                x:Name="PlayersEntry"
-                Keyboard="Numeric"
-                Text="4" />
+                <HorizontalStackLayout
+                    HorizontalOptions="Center"
+                    Spacing="20">
 
-            <Label Text="Temps par tour (secondes)" />
-            <Entry
-                x:Name="TimeEntry"
-                Keyboard="Numeric"
-                Text="90" />
-            <Label Text="Ambiance sonore" />
-            <Picker
-                x:Name="SoundThemePicker"
-                Title="Choisir une ambiance"
-                HorizontalOptions="Center">
-                <Picker.Items>
-                    <x:String>Aucune</x:String>
-                    <x:String>Clochettes</x:String>
-                    <x:String>Respiration</x:String>
-                </Picker.Items>
-            </Picker>
-            <Button
-                Text="Démarrer"
-                Clicked="OnStartClicked"
-                BackgroundColor="DarkGray"
-                HorizontalOptions="Center" />
-        </VerticalStackLayout>
+                    <Button
+                        x:Name="DecreasePlayer"
+                        Text="➖"
+                        WidthRequest="60"
+                        HeightRequest="60"
+                        CornerRadius="30"
+                        Clicked="OnDecreasePlayers"
+                        BackgroundColor="#4682B4"
+                        TextColor="Black"/>
+
+                    <Label
+                        x:Name="PlayersLabel"
+                        Text="4"
+                        TextColor="#D3D3D3" 
+                        FontSize="32"
+                        VerticalOptions="Center"/>
+
+                    <Button
+                        x:Name="IncreasePlayer"
+                        Text="➕"
+                        WidthRequest="60"
+                        HeightRequest="60"
+                        CornerRadius="30"
+                        Clicked="OnIncreasePlayers"
+                        BackgroundColor="#4682B4"
+                        TextColor="Black"/>
+
+                </HorizontalStackLayout>
+
+                <Label
+                    Text="⏱ Temps par tour"
+                    FontSize="20"
+                    FontAttributes="Bold"
+                    TextColor="#D3D3D3"  
+                    HorizontalOptions="Center"/>
+
+                <FlexLayout Wrap="Wrap" JustifyContent="Center">
+                    <Button x:Name="Time30Button" Text="30s" WidthRequest="80" HeightRequest="50" CornerRadius="25" Margin="5" BackgroundColor="#008B8B" TextColor="White" Clicked="OnTimeSelectedAsync"/>
+                    <Button x:Name="Time60Button" Text="60s" WidthRequest="80" HeightRequest="50" CornerRadius="25" Margin="5" BackgroundColor="#008B8B" TextColor="White" Clicked="OnTimeSelectedAsync"/>
+                    <Button x:Name="Time90Button" Text="90s" WidthRequest="80" HeightRequest="50" CornerRadius="25" Margin="5" BackgroundColor="#008B8B" TextColor="White" Clicked="OnTimeSelectedAsync"/>
+                    <Button x:Name="Time120Button" Text="120s" WidthRequest="80" HeightRequest="50" CornerRadius="25" Margin="5" BackgroundColor="#008B8B" TextColor="White" Clicked="OnTimeSelectedAsync"/>
+                    <Button x:Name="Time150Button" Text="150s" WidthRequest="80" HeightRequest="50" CornerRadius="25" Margin="5" BackgroundColor="#008B8B" TextColor="White" Clicked="OnTimeSelectedAsync"/>
+                </FlexLayout>
+
+                <Picker
+                    x:Name="SoundThemePicker"
+                    Title="Choisir une ambiance"
+                    HorizontalOptions="Center"
+                    TitleColor="#D3D3D3"
+                    TextColor="White"
+                    BackgroundColor="#008B8B"
+                    Margin="0,10,0,0">
+                    <Picker.Items>
+                        <x:String>Aucune</x:String>
+                        <x:String>Clochettes</x:String>
+                        <x:String>Respiration</x:String>
+                    </Picker.Items>
+                </Picker>
+                <Button
+                    Text="Démarrer"
+                    Clicked="OnStartClicked"
+                    BackgroundColor="#4682B4"
+                    TextColor="White"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    CornerRadius="10"
+                    HeightRequest="60"
+                    WidthRequest="200"
+                    HorizontalOptions="Center"
+                    Margin="0,20,0,0" />
+            </VerticalStackLayout>
+        </ScrollView>    
     </Grid>
 </ContentPage>

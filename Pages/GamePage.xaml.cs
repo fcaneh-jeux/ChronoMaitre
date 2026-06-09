@@ -4,6 +4,7 @@ using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 using Plugin.Maui.Audio;
 using Microsoft.Maui.Storage;
+using Microsoft.Maui.Animations;
 
 namespace HurryUpDavid.Pages;
 
@@ -13,6 +14,7 @@ public partial class GamePage : ContentPage
     private int _remainingSeconds;
     private bool _isRunning = false;
     private bool _isPaused = false;
+    private bool _isTransitionAnimating = false;
     private List<Color> _playerColors;
     private CancellationTokenSource _cancellationTokenSource;
     private readonly GameSettings _gameSettings;
@@ -24,7 +26,7 @@ public partial class GamePage : ContentPage
     public GamePage(GameSettings gameSettings, List<Color> playerColors)
     {
         InitializeComponent();
-        
+
         _gameSettings = gameSettings;
         _playerColors = playerColors;
 
@@ -33,7 +35,8 @@ public partial class GamePage : ContentPage
         _remainingSeconds = _gameSettings.TurnDuration;
 
         TimerLabel.Text = _gameSettings.TurnDuration.ToString();
-        PlayerLabel.Text = $"Tour de: Joueur {_currentPlayerIndex + 1}";
+        TimerLabel.TextColor = _playerColors[_currentPlayerIndex];
+        PlayerLabel.Text = $"JOUEUR {_currentPlayerIndex + 1}";
 
         _circleGameDrawable = new CircleGameDrawable
         {
@@ -84,6 +87,7 @@ public partial class GamePage : ContentPage
     {
         if (!_isRunning) return;
         if (_isPaused) return;
+        if (_isTransitionAnimating) return;
         OnNextPlayer();
     }
 
@@ -119,7 +123,7 @@ public partial class GamePage : ContentPage
             {
                 PauseResumeButton.Text = "❚❚";
                 _cancellationTokenSource = new CancellationTokenSource();
-                
+
                 if (_remainingSeconds <= 10 && _ambientPlayer != null && _gameSettings.SoundTheme != "Aucune")
                 {
                     _ambientPlayer.Play();
@@ -145,18 +149,29 @@ public partial class GamePage : ContentPage
         await RunTimer(_cancellationTokenSource.Token);
     }
 
-    private void OnNextPlayer()
+    private async void OnHomeClicked(object sender, EventArgs e)
     {
         _cancellationTokenSource?.Cancel();
+        Application.Current.Windows[0].Page = new NavigationPage(new SetupPage());
+    }
 
+    private void OnNextPlayer()
+    {
+        _isRunning = false;
+        _cancellationTokenSource?.Cancel();
         _isPaused = false;
+
+        Color previousColor = _playerColors[_currentPlayerIndex];
 
         _currentPlayerIndex = (_currentPlayerIndex + 1) % _gameSettings.PlayerCount;
         _remainingSeconds = _gameSettings.TurnDuration;
-        _circleGameDrawable.GlowIntensities.Clear();
-        RenderRefresh();
+        Color nextColor = _playerColors[_currentPlayerIndex];
 
-        _isRunning = true;
+        
+        _circleGameDrawable.NextColor = nextColor;
+        _circleGameDrawable.IsTransitioning = true;
+        _circleGameDrawable.TransitionProgress = 0f;
+
         _cancellationTokenSource = new CancellationTokenSource();
 
         if (_ambientPlayer != null)
@@ -164,7 +179,67 @@ public partial class GamePage : ContentPage
             _ambientPlayer.Stop();
             _ambientPlayer.Seek(0);
         }
-        _ = RunTimer(_cancellationTokenSource.Token);
+        _ = AnimateColorTransition();
+    }
+
+    private async Task AnimateColorTransition()
+    {
+        _isTransitionAnimating = true;
+        try
+        {
+            float duration = 1.0f;
+            int steps = 30;
+            float stepDuration = duration / steps;
+            float initialScale = _circleGameDrawable.PulseScale;
+
+            for (int i = 0; i <= steps; i++)
+            {
+                float progress = i / (float)steps;
+                _circleGameDrawable.TransitionProgress = progress;
+
+                _circleGameDrawable.TransitionScale = 1f + (float)Math.Sin(progress * Math.PI) * 0.18f;
+
+                Color currentColor = GetCurrentTextColor();
+                float alpha = 0.6f + (0.4f * progress);
+                TimerLabel.TextColor = currentColor.WithAlpha(alpha);
+                
+                GameCanvas.Invalidate();
+                await Task.Delay((int)(stepDuration * 1000));
+            }
+
+            _circleGameDrawable.CurrentColor = _circleGameDrawable.NextColor;
+            _circleGameDrawable.NextColor = _circleGameDrawable.CurrentColor;
+
+            _circleGameDrawable.IsTransitioning = false;
+            _circleGameDrawable.TransitionProgress = 0f;
+            _circleGameDrawable.TransitionScale = 1f;
+
+            _circleGameDrawable.GlowIntensities.Clear();
+
+            TimerLabel.Text = _remainingSeconds.ToString();
+            TimerLabel.TextColor = _playerColors[_currentPlayerIndex];
+            PlayerLabel.Text = $"JOUEUR {_currentPlayerIndex + 1}";
+            PlayerLabel.TextColor = _playerColors[_currentPlayerIndex].WithAlpha(0.8f);
+
+            _isRunning = true;
+            _ = RunTimer(_cancellationTokenSource.Token);
+        }
+        finally
+        {
+            _isTransitionAnimating = false;
+        }
+    }
+
+    private Color GetCurrentTextColor()
+    {
+        if (_circleGameDrawable.IsTransitioning)
+        {
+            return CircleGameDrawable.Lerp(_playerColors[(_currentPlayerIndex - 1 + _gameSettings.PlayerCount) % _gameSettings.PlayerCount], _playerColors[_currentPlayerIndex], _circleGameDrawable.TransitionProgress);
+        }
+        else
+        {
+            return _circleGameDrawable.CurrentColor;
+        }
     }
 
     private async Task RunTimer(CancellationToken cancellationToken)
@@ -173,7 +248,7 @@ public partial class GamePage : ContentPage
         long lastSecond = 0;
         List<float> glowIntensities = new List<float>();
         const int maxGlowCircles = 5;
-        const float glowFadeInSpeed = 0.1f;
+        const float glowFadeInSpeed = 0.02f; 
 
         bool isPulsing = false;
         float pulseDirection = 0.8f;
@@ -182,25 +257,36 @@ public partial class GamePage : ContentPage
 
         if (_ambientPlayer != null && _ambientPlayer.IsPlaying && _remainingSeconds <= 10)
         {
-            isSoundPlayed = true; // Marque le son comme joué si le timer est déjà dans les 10 secondes et que le son est en train de jouer
+            isSoundPlayed = true;
         }
 
         while (_isRunning && !cancellationToken.IsCancellationRequested)
         {
             TimerLabel.Text = _remainingSeconds.ToString();
-            PlayerLabel.Text = $"Tour de: Joueur {_currentPlayerIndex + 1}";
+            TimerLabel.TextColor = _playerColors[_currentPlayerIndex];
+            PlayerLabel.Text = $"JOUEUR {_currentPlayerIndex + 1}";
+            PlayerLabel.TextColor = Colors.White;
 
-            // Gestion des cercles de glow
+            // --- Gestion des anneaux de glow ---
             if (_remainingSeconds <= 20)
             {
+                // Nombre d'anneaux à afficher (1 à 5)
                 int requiredGlowCircles = Math.Min(maxGlowCircles, (int)((20 - _remainingSeconds) / 2f) + 1);
+
+                // Ajoute les anneaux manquants
                 while (glowIntensities.Count < requiredGlowCircles)
                 {
-                    glowIntensities.Add(0f);
+                    glowIntensities.Add(0f); // Commence à 0 (invisible)
                 }
+
+                // Met à jour l'opacité des anneaux (progressivement)
                 for (int i = 0; i < glowIntensities.Count; i++)
                 {
-                    glowIntensities[i] = Math.Min(1f, glowIntensities[i] + glowFadeInSpeed);
+                    // Si l'anneau doit être affiché, augmente son opacité progressivement
+                    if (i < requiredGlowCircles)
+                    {
+                        glowIntensities[i] = Math.Min(1f, glowIntensities[i] + glowFadeInSpeed);
+                    }
                 }
             }
             else
@@ -208,7 +294,7 @@ public partial class GamePage : ContentPage
                 glowIntensities.Clear();
             }
 
-            // Pulsation et sons dans les 10 dernières secondes
+            // --- Pulsation à 10 secondes ---
             if (_remainingSeconds <= 10)
             {
                 isPulsing = true;
@@ -226,24 +312,24 @@ public partial class GamePage : ContentPage
 
                 if (_remainingSeconds == 10 && !isSoundPlayed && _ambientPlayer != null && _gameSettings.SoundTheme != "Aucune")
                 {
-                    _ambientPlayer.Stop(); // Arrête le son au cas où il serait déjà en train de jouer
-                    _ambientPlayer.Seek(0); // Rembobine au début
-                    _ambientPlayer.Play(); // Lance le son
-                    isSoundPlayed = true; // Marque le son comme joué
-                    System.Diagnostics.Debug.WriteLine($"🔊 Son joué à 10 secondes pour le joueur {_currentPlayerIndex + 1} !");
+                    _ambientPlayer.Stop();
+                    _ambientPlayer.Seek(0);
+                    _ambientPlayer.Play();
+                    isSoundPlayed = true;
                 }
             }
             else
             {
                 isPulsing = false;
                 pulseProgress = 0f;
-                // Ne pas réinitialiser isSoundPlayed ici (c'est fait dans OnNextPlayer)
             }
 
+            // Met à jour les propriétés du Drawable
             _circleGameDrawable.GlowIntensities = glowIntensities;
             _circleGameDrawable.PulseScale = isPulsing ? (1f + 0.05f * pulseProgress) : 1f;
             _circleGameDrawable.IsPulsing = isPulsing;
             _circleGameDrawable.PulseProgress = pulseProgress;
+
             GameCanvas.Invalidate();
 
             long elapsedSeconds = stopwatch.ElapsedMilliseconds / 1000;
@@ -256,6 +342,7 @@ public partial class GamePage : ContentPage
                 {
                     _remainingSeconds = 0;
                     TimerLabel.Text = "0";
+                    await AnimateGlowFadeOut();
                     OnNextPlayer();
                     break;
                 }
@@ -265,9 +352,33 @@ public partial class GamePage : ContentPage
         }
     }
 
-    private void RenderRefresh()
+    private async Task AnimateGlowFadeOut()
     {
-        _circleGameDrawable.CurrentColor = _playerColors[_currentPlayerIndex];
-        GameCanvas.Invalidate();
+        // Fade-out progressif : tous les anneaux disparaissent ensemble
+        int steps = 60; // Plus d'étapes pour un effet fluide
+        float initialOpacity = 1f;
+
+        for (int step = 0; step <= steps; step++)
+        {
+            float progress = step / (float)steps;
+            float opacity = initialOpacity * (1f - progress);
+
+            // Applique à tous les anneaux
+            for (int i = 0; i < _circleGameDrawable.GlowIntensities.Count; i++)
+            {
+                float delay = i * 0.15f;
+
+                float localOpacity =
+                    Math.Max(0f, 1f - (progress + delay));
+
+                _circleGameDrawable.GlowIntensities[i] = localOpacity;
+            }
+
+            GameCanvas.Invalidate();
+            await Task.Delay(16); // 16ms par étape (~1 seconde au total)
+        }
+
+        // Réinitialise les anneaux
+        _circleGameDrawable.GlowIntensities.Clear();
     }
 }

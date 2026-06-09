@@ -3,34 +3,38 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="HurryUpDavid.Pages.ColorSelectionPage"
              Title="ColorSelectionPage"
-             BackgroundColor="DarkGray">
+             NavigationPage.HasNavigationBar="False"
+             BackgroundColor="#2F4F4F">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+    
+            <Label x:Name="InstructionLabel"
+                    Text="Sélectionnez une couleur pour chaque joueur"
+                    FontSize="20"
+                    TextColor="#F5F5F5" 
+                    HorizontalOptions="Center"/>
 
-    <VerticalStackLayout Padding="20" Spacing="20">
+            <Grid
+                    x:Name="ColorsGrid"
+                    HorizontalOptions="Center"
+                    ColumnSpacing="15"
+                    RowSpacing="15"
+                    Padding="10">
 
-        <Label x:Name="InstructionLabel"
-            FontSize="20"
-            HorizontalOptions="Center"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-        <Grid
-            x:Name="ColorsGrid"
-            HorizontalOptions="Center"
-            ColumnSpacing="15"
-            RowSpacing="15"
-            Padding="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+            </Grid>
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-        </Grid>
-
-    </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

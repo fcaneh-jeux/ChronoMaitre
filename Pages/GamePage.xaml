@@ -1,86 +1,33 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    x:Class="HurryUpDavid.Pages.GamePage"
-    NavigationPage.HasBackButton="False"
-    BackgroundColor="DarkGray">
-
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="HurryUpDavid.Pages.GamePage" NavigationPage.HasNavigationBar="False" BackgroundColor="#2F4F4F">
     <Grid>
-        <!-- Bouton de sortie en haut à droite -->
-        <Button
-            x:Name="ExitButton"
-            Text="✕"
-            WidthRequest="40"
-            HeightRequest="40"
-            CornerRadius="20"
-            BackgroundColor="Transparent"
-            TextColor="White"
-            FontSize="20"
-            Clicked="OnExitClicked"
-            Grid.Row="0"
-            Grid.Column="1"
-            HorizontalOptions="End"
-            VerticalOptions="Start"
-            Margin="10" />
+        <!-- Boutons en haut à droite -->
+        <HorizontalStackLayout ZIndex="10" HorizontalOptions="End" VerticalOptions="Start" Margin="10" Spacing="5">
+            <Button Text="⌂" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#4682B4" TextColor="White" FontSize="20" Clicked="OnHomeClicked"/>
+            <Button Text="✕" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#B22222" TextColor="White" FontSize="20" Clicked="OnExitClicked"/>
+        </HorizontalStackLayout>
 
-        <!-- Conteneur principal -->
-        <VerticalStackLayout
-            Grid.Row="1"
-            HorizontalOptions="Center"
-            VerticalOptions="Center"
-            Spacing="20">
-
-            <!-- Cercle + Timer/Nom du joueur -->
-            <Grid
-                WidthRequest="400"
-                HeightRequest="400"
-                HorizontalOptions="Center">
-                <!-- Cercle (GraphicsView) -->
-                <GraphicsView
-                    x:Name="GameCanvas"
-                    WidthRequest="400"
-                    HeightRequest="400"
-                    HorizontalOptions="Center"
-                    VerticalOptions="Center">
-                    <GraphicsView.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnCircleTapped" />
-                    </GraphicsView.GestureRecognizers>
-                </GraphicsView>
-
-                <!-- Timer et nom du joueur (au centre du cercle) -->
-                <VerticalStackLayout
-                    HorizontalOptions="Center"
-                    VerticalOptions="Center"
-                    Spacing="0">
-                    <VerticalStackLayout.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="OnCircleTapped" />
-                    </VerticalStackLayout.GestureRecognizers>
-                    <Label
-                        x:Name="TimerLabel"
-                        FontSize="70"
-                        FontAttributes="Bold"
-                        HorizontalTextAlignment="Center"
-                        TextColor="White" />
-                    <Label
-                        x:Name="PlayerLabel"
-                        FontSize="18"
-                        HorizontalTextAlignment="Center"
-                        TextColor="White" />
-                </VerticalStackLayout>
-            </Grid>
-
-            <!-- Bouton Pause/Reprise (sous le cercle) -->
-            <Button
-                x:Name="PauseResumeButton"
-                Text="▶"
-                WidthRequest="60"
-                HeightRequest="60"
-                CornerRadius="30"
-                BackgroundColor="Transparent"
-                TextColor="White"
-                Clicked="OnPauseResumeClicked"
-                HorizontalOptions="Center"/>
-        </VerticalStackLayout>
+        <ScrollView>
+            <!-- Contenu principal -->
+            <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Center" Spacing="16" Padding="20">
+                <!-- Cercle + Timer/Nom du joueur -->
+                <Grid WidthRequest="300" HeightRequest="300" HorizontalOptions="Center">
+                    <GraphicsView x:Name="GameCanvas" WidthRequest="300" HeightRequest="300" HorizontalOptions="Center" VerticalOptions="Center">
+                        <GraphicsView.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCircleTapped" />
+                        </GraphicsView.GestureRecognizers>
+                    </GraphicsView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="0">
+                        <VerticalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCircleTapped" />
+                        </VerticalStackLayout.GestureRecognizers>
+                        <Label x:Name="TimerLabel" FontSize="72" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="White" />
+                        <Label x:Name="PlayerLabel" FontSize="22" FontAttributes="Bold" HorizontalTextAlignment="Center" TextColor="White" />
+                    </VerticalStackLayout>
+                </Grid>
+                <!-- Bouton Pause/Reprise -->
+                <Button x:Name="PauseResumeButton" Text="▶" FontSize="60" WidthRequest="90" HeightRequest="90" CornerRadius="45" BackgroundColor="Transparent" TextColor="White" Clicked="OnPauseResumeClicked" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+        </ScrollView>
     </Grid>
 </ContentPage>

@@ -9,14 +9,14 @@ public partial class ColorSelectionPage : ContentPage
     private List<Color> _selectedColors = new();
     private readonly List<Color> _availableColors = new()
     {
-        Colors.Red,
-        Colors.Green,
-        Colors.Blue,
-        Colors.Yellow,
-        Colors.Orange,
-        Colors.Purple,
-        Colors.Black,
-        Colors.White
+        Color.FromArgb("#FF5252"),  // Rouge vif
+        Color.FromArgb("#4CAF50"),  // Vert
+        Color.FromArgb("#2196F3"),  // Bleu vif
+        Color.FromArgb("#FFEB3B"),  // Jaune
+        Color.FromArgb("#9C27B0"),  // Violet foncé
+        Color.FromArgb("#FF9800"),  // Orange
+        Color.FromArgb("#1A1A1A"),  // Gris foncé (remplace Black)
+        Color.FromArgb("#EEEEEE")   // Blanc cassé (remplace White)
     };
 
     public ColorSelectionPage(GameSettings gameSettings)
@@ -55,7 +55,7 @@ public partial class ColorSelectionPage : ContentPage
 
     private void UpdateInstruction()
     {
-        InstructionLabel.Text = $"Player {_currentPlayerIndex + 1}, select your color";
+        InstructionLabel.Text = $"Joueur {_currentPlayerIndex + 1}, choisissez votre couleur";
     }
 
     private void OnColorSelected(Color color)
