@@ -190,6 +190,41 @@ Cette démarche reflète une pratique moderne du développement logiciel : savoi
 
 ---
 
+# 📦 Publication Android
+
+L'application est compilée et distribuée sous forme d'APK Android signé.
+
+Le projet a nécessité :
+
+- la configuration de l'environnement Android (.NET MAUI) ;
+- la gestion des signatures APK ;
+- les tests sur appareil physique ;
+- la validation du comportement sur différentes résolutions d'écran.
+
+L'application est actuellement testée sur Windows et Android.
+
+---
+
+# 🗺️ Roadmap
+
+## Version actuelle
+
+✅ Gestion des joueurs  
+✅ Timer configurable  
+✅ Ambiances sonores  
+✅ Animations de transition  
+✅ Publication Android
+
+## Améliorations prévues
+
+⬜ Icônes et identité visuelle personnalisées  
+⬜ Vibrations en fin de tour  
+⬜ Sauvegarde des préférences utilisateur  
+⬜ Historique des parties  
+⬜ Publication sur Play Store
+
+---
+
 # 👨‍💻 Auteur
 
 **Fabien Canehan**
