@@ -78,7 +78,18 @@ public partial class ColorSelectionPage : ContentPage
 
     private void GoToGame()
     {
-        Application.Current.Windows[0].Page = new NavigationPage(new GamePage(_gameSettings, _selectedColors));
+        if (_gameSettings.GameMode == GameMode.TurnTimer)
+        {
+            Application.Current.Windows[0].Page = new NavigationPage(new GamePage(_gameSettings, _selectedColors));
+        }
+        else if(_gameSettings.GameMode == GameMode.TimeBank)
+        {
+            Application.Current.Windows[0].Page = new NavigationPage(new TimeBankGamePage(_gameSettings, _selectedColors));
+        }
+        else
+        {
+            throw new NotImplementedException($"Mode {_gameSettings.GameMode} non géré");
+        }
     }
 }
 

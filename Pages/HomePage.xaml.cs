@@ -6,4 +6,13 @@ public partial class HomePage : ContentPage
 	{
 		InitializeComponent();
 	}
+    private async void OnTurnTimerClicked(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new SetupPage());
+    }
+
+    private async void OnTimeBankClicked(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new TimeBankSetupPage());
+    }
 }

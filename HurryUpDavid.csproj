@@ -84,13 +84,28 @@
 	  <MauiXaml Update="Pages\GamePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Pages\HomePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Pages\SetupPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\TimeBankGamePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\TimeBankSetupPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Folder Include="Resources\Raw\Audios\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Pages\TimeBankSetupPage.xaml.cs">
+	    <DependentUpon>TimeBankSetupPage.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">

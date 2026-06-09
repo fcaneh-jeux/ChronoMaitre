@@ -1,12 +1,134 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="HurryUpDavid.Pages.TimeBankSetupPage"
-             Title="TimeBankSetupPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="HurryUpDavid.Pages.TimeBankSetupPage"
+    BackgroundColor="#2F4F4F"
+    NavigationPage.HasNavigationBar="False">
+
+    <Grid>
+
+        <!-- Bouton fermeture -->
+        <Button
+            Text="✕"
+            WidthRequest="40"
+            HeightRequest="40"
+            CornerRadius="20"
+            BackgroundColor="#B22222"
+            TextColor="White"
+            FontSize="20"
+            Clicked="OnExitClicked"
+            HorizontalOptions="End"
+            VerticalOptions="Start"
+            Margin="10" />
+
+        <ScrollView>
+
+            <VerticalStackLayout
+                Padding="30"
+                Spacing="20">
+
+                <Label
+                    Text="🏦 Banque de temps"
+                    FontSize="36"
+                    FontAttributes="Bold"
+                    TextColor="#F5F5F5"
+                    HorizontalOptions="Center" />
+
+                <Label
+                    Text="👥 Nombre de joueurs"
+                    FontSize="20"
+                    FontAttributes="Bold"
+                    TextColor="#D3D3D3"
+                    HorizontalOptions="Center" />
+
+                <HorizontalStackLayout
+                    HorizontalOptions="Center"
+                    Spacing="20">
+
+                    <Button
+                        Text="➖"
+                        WidthRequest="60"
+                        HeightRequest="60"
+                        CornerRadius="30"
+                        BackgroundColor="#4682B4"
+                        TextColor="Black"
+                        Clicked="OnDecreasePlayers"/>
+
+                    <Label
+                        x:Name="PlayersLabel"
+                        Text="4"
+                        FontSize="32"
+                        VerticalOptions="Center"
+                        TextColor="#D3D3D3"/>
+
+                    <Button
+                        Text="➕"
+                        WidthRequest="60"
+                        HeightRequest="60"
+                        CornerRadius="30"
+                        BackgroundColor="#4682B4"
+                        TextColor="Black"
+                        Clicked="OnIncreasePlayers"/>
+
+                </HorizontalStackLayout>
+
+                <Label
+                    Text="🏦 Temps par joueur"
+                    FontSize="20"
+                    FontAttributes="Bold"
+                    TextColor="#D3D3D3"
+                    HorizontalOptions="Center"/>
+
+                <HorizontalStackLayout
+                    HorizontalOptions="Center"
+                    Spacing="20">
+
+                    <Button
+                        Text="➖"
+                        WidthRequest="60"
+                        HeightRequest="60"
+                        CornerRadius="30"
+                        BackgroundColor="#4682B4"
+                        TextColor="Black"
+                        Clicked="OnDecreaseTimeBank"/>
+
+                    <Label
+                        x:Name="TimeBankLabel"
+                        Text="60 min"
+                        FontSize="32"
+                        VerticalOptions="Center"
+                        TextColor="#D3D3D3"/>
+
+                    <Button
+                        Text="➕"
+                        WidthRequest="60"
+                        HeightRequest="60"
+                        CornerRadius="30"
+                        BackgroundColor="#4682B4"
+                        TextColor="Black"
+                        Clicked="OnIncreaseTimeBank"/>
+
+                </HorizontalStackLayout>
+
+                <Button
+                    Text="Démarrer"
+                    Clicked="OnStartClicked"
+                    BackgroundColor="#4682B4"
+                    TextColor="White"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    CornerRadius="10"
+                    HeightRequest="60"
+                    WidthRequest="200"
+                    HorizontalOptions="Center"
+                    Margin="0,20,0,0" />
+
+            </VerticalStackLayout>
+
+        </ScrollView>
+
+    </Grid>
+
 </ContentPage>
