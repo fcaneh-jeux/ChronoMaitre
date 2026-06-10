@@ -7,7 +7,7 @@
     Shell.NavBarIsVisible="False">
 
     <ShellContent
-        ContentTemplate="{DataTemplate local:SetupPage}"
+        ContentTemplate="{DataTemplate local:HomePage}"
         Route="SetupPage"/>
 
 </Shell>
