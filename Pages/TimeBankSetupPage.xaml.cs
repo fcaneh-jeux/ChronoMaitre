@@ -41,18 +41,46 @@ public partial class TimeBankSetupPage : ContentPage
 
     private void OnIncreaseTimeBank(object sender, EventArgs e)
     {
+        //if (_timeBankMinutes < 180)
+        //{
+        //    _timeBankMinutes += 5;
+        //    TimeBankLabel.Text = $"{_timeBankMinutes} min";
+        //}
+
         if (_timeBankMinutes < 180)
         {
-            _timeBankMinutes += 5;
+            if (_timeBankMinutes < 5)
+            {
+                _timeBankMinutes += 1;
+            }
+            else
+            {
+                _timeBankMinutes += 5;
+            }
+
             TimeBankLabel.Text = $"{_timeBankMinutes} min";
         }
     }
 
     private void OnDecreaseTimeBank(object sender, EventArgs e)
     {
-        if (_timeBankMinutes > 15)
+        //if (_timeBankMinutes > 15)
+        //{
+        //    _timeBankMinutes -= 5;
+        //    TimeBankLabel.Text = $"{_timeBankMinutes} min";
+        //}
+
+        if (_timeBankMinutes > 1)
         {
-            _timeBankMinutes -= 5;
+            if (_timeBankMinutes <= 5)
+            {
+                _timeBankMinutes -= 1;
+            }
+            else
+            {
+                _timeBankMinutes -= 5;
+            }
+
             TimeBankLabel.Text = $"{_timeBankMinutes} min";
         }
     }
