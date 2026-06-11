@@ -49,7 +49,8 @@ public partial class TimeBankGamePage : ContentPage
 
     private void OnCurrentPlayerTapped(object sender, TappedEventArgs e)
     {
-        System.Diagnostics.Debug.WriteLine("TAP DETECTE");
+        if (!_isRunning) return;
+        if (_isPaused) return;
         NextPlayer();
     }
 
@@ -105,46 +106,62 @@ public partial class TimeBankGamePage : ContentPage
 
     private void RenderPlayers()
     {
-        PlayersStack.Children.Clear();
+        PlayersAboveStack.Children.Clear();
+        PlayersBelowStack.Children.Clear();
 
-        int previousPlayer =
-            (_currentPlayerIndex - 1 + _players.Count)
-            % _players.Count;
-
-        int visualPosition = 0;
         List<int> displayOrder = new();
 
-        displayOrder.Add(previousPlayer);
+        int beforeCount = (_players.Count - 1) / 2;
+        int afterCount = _players.Count - beforeCount - 1;
 
-        for (int i = 0; i < _players.Count; i++)
+        for (int offset = -beforeCount; offset <= afterCount; offset++)
         {
-            int playerIndex =
-                (_currentPlayerIndex + i)
-                % _players.Count;
-
+            int playerIndex = (_currentPlayerIndex + offset + _players.Count) % _players.Count;
             displayOrder.Add(playerIndex);
         }
 
-        foreach (int index in displayOrder.Distinct())
+        //int middleIndex = displayOrder.Count / 2;
+        int currentPlayerPosition = displayOrder.IndexOf(_currentPlayerIndex);
+
+        for (int position = 0; position < displayOrder.Count; position++) 
         {
-            if (index == _currentPlayerIndex)
+            int index = displayOrder[position];
+
+            // Le joueur courant est affiché par
+            // CurrentPlayerLabel / CurrentPlayerTimeLabel
+            if (position == currentPlayerPosition)
             {
                 continue;
             }
 
-            visualPosition++;
-
             PlayerInfo player = _players[index];
 
-            bool isCurrentPlayer = index == _currentPlayerIndex;
+            int distanceFromCenter = Math.Abs(position - currentPlayerPosition);
+
+            double opacity = distanceFromCenter switch
+            {
+                1 => 0.80,
+                2 => 0.60,
+                3 => 0.40,
+                _ => 0.25
+            };
+
+            double scale = distanceFromCenter switch
+            {
+                1 => 1.00,
+                2 => 0.92,
+                3 => 0.84,
+                _ => 0.78
+            };
 
             Border playerBorder = new()
             {
-                BackgroundColor = player.Color.WithAlpha(0.45f),
+                BackgroundColor = player.Color.WithAlpha((float)opacity),
                 StrokeThickness = 0,
                 Padding = 10,
                 WidthRequest = 280,
                 HeightRequest = 80,
+                Scale = scale,
 
                 StrokeShape = new RoundRectangle
                 {
@@ -174,21 +191,20 @@ public partial class TimeBankGamePage : ContentPage
             {
                 Spacing = 2,
                 Children =
-                {
-                    playerLabel,
-                    timeLabel
-                }
+            {
+                playerLabel,
+                timeLabel
+            }
             };
 
-            PlayersStack.Children.Add(playerBorder);
-            int capturedIndex = index;
-            //var tapGesture = new TapGestureRecognizer();
-            //tapGesture.Tapped += (sender, e) =>
-            //{
-            //    OnPlayerTapped(capturedIndex);
-            //};
-
-            //playerBorder.GestureRecognizers.Add(tapGesture);
+            if (position < currentPlayerPosition)
+            {
+                PlayersAboveStack.Children.Add(playerBorder);
+            }
+            else
+            {
+                PlayersBelowStack.Children.Add(playerBorder);
+            }
         }
     }
 
@@ -201,20 +217,14 @@ public partial class TimeBankGamePage : ContentPage
         if (player.RemainingTime.TotalMinutes > 5)
         {
             return $"{hours:D2}:{minutes:D2}";
+            // pour la démo
+            //return $"{hours:D2}:{minutes:D2}:{seconds:D2}";
         }
         else
         {
             return $"{minutes:D2}:{seconds:D2}";
         }
     }
-
-    //private void OnPlayerTapped(int playerIndex)
-    //{
-
-    //    _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.Count;
-    //    RenderPlayers();
-    //    UpdateCurrentPlayerDisplay();
-    //}
 
     private async void OnHomeClicked(object sender, EventArgs e)
     {
