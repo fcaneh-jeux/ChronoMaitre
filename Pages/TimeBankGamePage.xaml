@@ -10,25 +10,7 @@
             <Button x:Name="Exit" Text="✕" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#B22222" TextColor="White" FontSize="20" Clicked="OnExitClicked"/>
         </HorizontalStackLayout>
         <ScrollView Grid.Row="1">
-            <Grid RowDefinitions="Auto, Auto, Auto">
-
-                <VerticalStackLayout x:Name="PlayersAboveStack" Grid.Row="0" VerticalOptions="End" HorizontalOptions="Center" Spacing="6"/>
-            
-                <!-- Joueur actif -->
-                <Border x:Name="CurrentPlayerBorder" StrokeThickness="0" Padding="20" Grid.Row="1">
-                    <VerticalStackLayout x:Name="CurrentPlayerContainer" Grid.Row="0" HorizontalOptions="Center" VerticalOptions="Center" Spacing="0" Padding="20">
-                        <Label x:Name="CurrentPlayerLabel" FontSize="36" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
-                        <Label x:Name="CurrentPlayerTimeLabel" FontSize="96" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
-                        <VerticalStackLayout.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnCurrentPlayerTapped"/>
-                        </VerticalStackLayout.GestureRecognizers>
-                    </VerticalStackLayout>
-                </Border>
-                <!-- Liste des joueurs avec leur temps -->
-                <VerticalStackLayout x:Name="PlayersBelowStack" Grid.Row="2"  Spacing="6"  VerticalOptions="Start" HorizontalOptions="Center"/>
-                <!-- Les joueurs seront ajoutés dynamiquement ici -->
-
-            </Grid>
+            <AbsoluteLayout x:Name="GameArea"/>
         </ScrollView>
         <Button x:Name="PauseResumeButton" Grid.Row="2" Text="▶" FontSize="60" WidthRequest="90" HeightRequest="90" CornerRadius="45" BackgroundColor="Transparent" TextColor="White" Clicked="OnPauseResumeClicked" HorizontalOptions="Center" Margin="0,20,0,20"/>
     </Grid>

@@ -18,6 +18,7 @@ public partial class TimeBankGamePage : ContentPage
     private int _currentPlayerIndex = 0;
     private IDispatcherTimer? _timer;
     private bool _criticalPulseRunning;
+    private readonly Dictionary<int, Border> _playerBorders = new();
 
     public TimeBankGamePage(GameSettings gameSettings, List<Color> playerColors)
     {
@@ -40,6 +41,11 @@ public partial class TimeBankGamePage : ContentPage
             });
         }
 
+        for (int i = 0; i < _players.Count; i++)
+        {
+            _playerBorders[i] = CreatePlayerBorder(i);
+        }
+
         _timer = Dispatcher.CreateTimer();
         _timer.Interval = TimeSpan.FromSeconds(1);
         _timer.Tick += OnTimerTick;
@@ -47,6 +53,58 @@ public partial class TimeBankGamePage : ContentPage
         // Affiche les joueurs
         RenderPlayers();
         UpdateCurrentPlayerDisplay();
+    }
+
+    private Border CreatePlayerBorder(int playerIndex)
+    {
+        PlayerInfo player = _players[playerIndex];
+
+        Border playerBorder = new()
+        {
+            StrokeThickness = 0,
+            Padding = 10,
+            WidthRequest = 280,
+            HeightRequest = 80,
+
+            StrokeShape = new RoundRectangle
+            {
+                CornerRadius = 12
+            }
+        };
+
+        Label playerLabel = new()
+        {
+            Text = $"Joueur {playerIndex + 1}",
+            FontSize = 18,
+            FontAttributes = FontAttributes.Bold,
+            TextColor = Colors.White,
+            HorizontalOptions = LayoutOptions.Center
+        };
+
+        Label timeLabel = new()
+        {
+            FontSize = 24,
+            FontAttributes = FontAttributes.Bold,
+            TextColor = Colors.White,
+            HorizontalOptions = LayoutOptions.Center
+        };
+
+        playerBorder.Content = new VerticalStackLayout
+        {
+            Spacing = 2,
+            Children =
+        {
+            playerLabel,
+            timeLabel
+        }
+        };
+
+        return playerBorder;
+    }
+
+    private async Task RotatePlayersAnimation()
+    {
+
     }
 
     private void StopCriticalPulse()
@@ -61,17 +119,12 @@ public partial class TimeBankGamePage : ContentPage
 
         _criticalPulseRunning = true;
 
+        Border currentBorder = _playerBorders[_currentPlayerIndex];
         while (_criticalPulseRunning)
         {
-            await CurrentPlayerTimeLabel.ScaleToAsync(
-                1.15,
-                500,
-                Easing.CubicOut);
+            await currentBorder.ScaleToAsync(1.15, 500, Easing.CubicOut);
 
-            await CurrentPlayerTimeLabel.ScaleToAsync(
-                1.00,
-                500,
-                Easing.CubicIn);
+            await currentBorder.ScaleToAsync(1.00, 500, Easing.CubicIn);
         }
     }
 
@@ -84,9 +137,11 @@ public partial class TimeBankGamePage : ContentPage
 
     private void NextPlayer()
     {
+        if (_isTransitionAnimating) return;
+
         StopCriticalPulse();
 
-        if(_players.All(player=> player.RemainingTime <= TimeSpan.Zero))
+        if (_players.All(player => player.RemainingTime <= TimeSpan.Zero))
         {
             _isRunning = false;
             _timer?.Stop();
@@ -98,57 +153,14 @@ public partial class TimeBankGamePage : ContentPage
             _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.Count;
         }
         while (_players[_currentPlayerIndex].RemainingTime <= TimeSpan.Zero);
-        
+
         RenderPlayers();
         UpdateCurrentPlayerDisplay();
     }
 
     private void UpdateCurrentPlayerDisplay()
     {
-        var player = _players[_currentPlayerIndex];
-
-        double remainingSeconds = player.RemainingTime.TotalSeconds;
-
-        CurrentPlayerBorder.BackgroundColor = player.Color.WithAlpha(0.35f);
-        CurrentPlayerLabel.Text = $"JOUEUR {_currentPlayerIndex + 1}";
-        CurrentPlayerLabel.TextColor = player.Color;
-        CurrentPlayerTimeLabel.Text = FormatTimeSpan(player);
-        CurrentPlayerTimeLabel.TextColor = player.Color;
-
-        if (remainingSeconds <= 20)
-        {
-            CurrentPlayerBorder.BackgroundColor = player.Color.WithAlpha(0.50f);
-        }
-
-        if (remainingSeconds <= 10)
-        {
-            CurrentPlayerBorder.BackgroundColor = player.Color.WithAlpha(0.70f);
-            _ = RunCriticalPulse();
-        }
-        else
-        {
-            StopCriticalPulse();
-        }
-    }
-
-    private async Task PulseTimer(double remaingseconds)
-    {
-        if (_isPulseRunning) return;
-
-        _isPulseRunning = true;
-
-        if(remaingseconds > 3)
-        {
-            await CurrentPlayerTimeLabel.ScaleToAsync(1.15, 500, Easing.CubicOut);
-            await CurrentPlayerTimeLabel.ScaleToAsync(1.00, 500, Easing.CubicIn);
-        }                                                   
-        else                                                
-        {                                                   
-            await CurrentPlayerTimeLabel.ScaleToAsync(1.22, 500, Easing.CubicOut);
-            await CurrentPlayerTimeLabel.ScaleToAsync(1.00, 500, Easing.CubicIn);
-        }
-
-        _isPulseRunning = false;
+        RenderPlayers();
     }
 
     private void OnTimerTick(object? sender, EventArgs e)
@@ -167,7 +179,7 @@ public partial class TimeBankGamePage : ContentPage
                 currentPlayer.RemainingTime = TimeSpan.Zero;
                 NextPlayer();
             }
-            
+
             RenderPlayers();
             UpdateCurrentPlayerDisplay();
         }
@@ -176,9 +188,7 @@ public partial class TimeBankGamePage : ContentPage
 
     private void RenderPlayers()
     {
-        PlayersAboveStack.Children.Clear();
-        PlayersBelowStack.Children.Clear();
-
+        GameArea.Children.Clear();
         List<int> displayOrder = new();
 
         int beforeCount = (_players.Count - 1) / 2;
@@ -193,88 +203,62 @@ public partial class TimeBankGamePage : ContentPage
         //int middleIndex = displayOrder.Count / 2;
         int currentPlayerPosition = displayOrder.IndexOf(_currentPlayerIndex);
 
-        for (int position = 0; position < displayOrder.Count; position++) 
+        for (int position = 0; position < displayOrder.Count; position++)
         {
             int index = displayOrder[position];
 
-            // Le joueur courant est affiché par
-            // CurrentPlayerLabel / CurrentPlayerTimeLabel
-            if (position == currentPlayerPosition)
-            {
-                continue;
-            }
-
+            bool isCurrentPlayer = position == currentPlayerPosition;
             PlayerInfo player = _players[index];
+            Border playerBorder = _playerBorders[index];
 
             int distanceFromCenter = Math.Abs(position - currentPlayerPosition);
 
-            double opacity = distanceFromCenter switch
+            double opacity;
+            if (isCurrentPlayer)
             {
-                1 => 0.80,
-                2 => 0.60,
-                3 => 0.40,
-                _ => 0.25
-            };
-
-            double scale = distanceFromCenter switch
-            {
-                1 => 1.00,
-                2 => 0.92,
-                3 => 0.84,
-                _ => 0.78
-            };
-
-            Border playerBorder = new()
-            {
-                BackgroundColor = player.Color.WithAlpha((float)opacity),
-                StrokeThickness = 0,
-                Padding = 10,
-                WidthRequest = 280,
-                HeightRequest = 80,
-                Scale = scale,
-
-                StrokeShape = new RoundRectangle
-                {
-                    CornerRadius = 12
-                }
-            };
-
-            Label playerLabel = new()
-            {
-                Text = $"Joueur {index + 1}",
-                FontSize = 18,
-                FontAttributes = FontAttributes.Bold,
-                TextColor = Colors.White,
-                HorizontalOptions = LayoutOptions.Center
-            };
-
-            Label timeLabel = new()
-            {
-                Text = FormatTimeSpan(player),
-                FontSize = 24,
-                FontAttributes = FontAttributes.Bold,
-                TextColor = Colors.White,
-                HorizontalOptions = LayoutOptions.Center
-            };
-
-            playerBorder.Content = new VerticalStackLayout
-            {
-                Spacing = 2,
-                Children =
-            {
-                playerLabel,
-                timeLabel
-            }
-            };
-
-            if (position < currentPlayerPosition)
-            {
-                PlayersAboveStack.Children.Add(playerBorder);
+                opacity = 1.0;
             }
             else
             {
-                PlayersBelowStack.Children.Add(playerBorder);
+                opacity = distanceFromCenter switch
+                {
+                    1 => 0.80,
+                    2 => 0.60,
+                    3 => 0.40,
+                    _ => 0.25
+                };
             }
+
+            double scale;
+            if (isCurrentPlayer)
+            {
+                scale = 1.0;
+            }
+            else
+            {
+                scale = distanceFromCenter switch
+                {
+                    1 => 1.00,
+                    2 => 0.92,
+                    3 => 0.84,
+                    _ => 0.78
+                };
+            }
+
+            playerBorder.BackgroundColor = player.Color.WithAlpha((float)opacity);
+            playerBorder.Scale = scale;
+
+            VerticalStackLayout content = (VerticalStackLayout)playerBorder.Content;
+            Label playerLabel = (Label)content.Children[0];
+            Label timerLabel = (Label)content.Children[1];
+            playerLabel.Text = $"Joueur {index + 1}";
+            timerLabel.Text = FormatTimeSpan(player);
+
+            double centerY = 320;
+            double spacing = 90;
+            double y = centerY + ((position - currentPlayerPosition) * spacing);
+            AbsoluteLayout.SetLayoutBounds(playerBorder, new Rect(20, y, 200, 80));
+            GameArea.Children.Add(playerBorder);
         }
     }
 
