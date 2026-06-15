@@ -37,6 +37,12 @@ public partial class TimeBankGamePage : ContentPage
             });
         }
 
+        // instauration du tap sur le caroussel pour le changement de joueur
+        TapGestureRecognizer tap = new();
+        tap.Tapped += OnCurrentPlayerTapped;
+
+        GameArea.GestureRecognizers.Add(tap);
+
         // créaton des borders de chaque joueur
         for (int i = 0; i < _players.Count; i++)
         {
@@ -160,11 +166,11 @@ public partial class TimeBankGamePage : ContentPage
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void OnCurrentPlayerTapped(object sender, TappedEventArgs e)
+    private async void OnCurrentPlayerTapped(object sender, TappedEventArgs e)
     {
         if (!_isRunning) return;
         if (_isPaused) return;
-        NextPlayer();
+        await NextPlayer();
     }
 
     /// <summary>
@@ -442,18 +448,6 @@ public partial class TimeBankGamePage : ContentPage
 
             PlayerInfo player = _players[index];
             Border playerBorder = _playerBorders[index];
-
-            playerBorder.GestureRecognizers.Clear();
-
-            // installation du tap sur le current player
-            if (index == _currentPlayerIndex)
-            {
-                TapGestureRecognizer tap = new();
-
-                tap.Tapped += OnCurrentPlayerTapped;
-
-                playerBorder.GestureRecognizers.Add(tap);
-            }
 
             // récuperation des positions, scale et opacity correspondantes
             int distanceFromCenter = Math.Abs(position - currentPlayerPosition);
