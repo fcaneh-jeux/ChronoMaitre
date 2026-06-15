@@ -9,9 +9,7 @@
             <Button x:Name="Maison" Text="⌂" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#4682B4" TextColor="White" FontSize="20" Clicked="OnHomeClicked"/>
             <Button x:Name="Exit" Text="✕" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#B22222" TextColor="White" FontSize="20" Clicked="OnExitClicked"/>
         </HorizontalStackLayout>
-        <ScrollView Grid.Row="1">
-            <AbsoluteLayout x:Name="GameArea"/>
-        </ScrollView>
+        <AbsoluteLayout x:Name="GameArea" Grid.Row="1"/>
         <Button x:Name="PauseResumeButton" Grid.Row="2" Text="▶" FontSize="60" WidthRequest="90" HeightRequest="90" CornerRadius="45" BackgroundColor="Transparent" TextColor="White" Clicked="OnPauseResumeClicked" HorizontalOptions="Center" Margin="0,20,0,20"/>
     </Grid>
 </ContentPage>

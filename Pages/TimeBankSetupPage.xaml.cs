@@ -96,6 +96,6 @@ public partial class TimeBankSetupPage : ContentPage
         };
 
         // Naviguer vers la page de sélection des couleurs
-        await Navigation.PushAsync(new ColorSelectionPage(gameSettings));
+        await Navigation.PushAsync(new ColorSelectionPage(gameSettings), false);
     }
 }
