@@ -8,11 +8,11 @@ public partial class HomePage : ContentPage
 	}
     private async void OnTurnTimerClicked(object sender, EventArgs e)
     {
-        await Navigation.PushAsync(new SetupPage());
+        await Navigation.PushAsync(new SetupPage(), false);
     }
 
     private async void OnTimeBankClicked(object sender, EventArgs e)
     {
-        await Navigation.PushAsync(new TimeBankSetupPage());
+        await Navigation.PushAsync(new TimeBankSetupPage(), false);
     }
 }
