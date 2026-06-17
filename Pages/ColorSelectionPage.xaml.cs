@@ -22,6 +22,7 @@ public partial class ColorSelectionPage : ContentPage
     private List<Grid> _colorContainers = new List<Grid>();
     private List<BoxView> _colorBoxes = new List<BoxView>();
     private List<Task> _animationTasks = new();
+    private readonly Random _random = new();
 
     public ColorSelectionPage(GameSettings gameSettings)
     {
@@ -112,15 +113,14 @@ public partial class ColorSelectionPage : ContentPage
 
     private async Task AnimateDustExplosion(Grid container, BoxView colorBox, Color explosionColor)
     {
-        // 1. Détermine la direction du déplacement (gauche ou droite)
+        // Détermine la direction du déplacement (gauche ou droite) selon le placement dans la grid
         int column = Grid.GetColumn(container);
         bool isLeftSide = column == 0;
-        double baseMoveDirection = isLeftSide ? -1 : 1; // Direction de base (-1 pour gauche, +1 pour droite)
-
-        // 2. Crée les particules du nuage
+        
+        // Crée les positions des particules du nuage à venir
         List<BoxView> clouds = new();
 
-        (double x, double y, double size)[] cloudData =
+        (double x, double y, double size)[] cloudTemplate =
         {
         (-12, -8, 16),
         (12, -8, 16),
@@ -133,8 +133,8 @@ public partial class ColorSelectionPage : ContentPage
         (0, 10, 18)
     };
 
-        // 3. Crée chaque particule du nuage
-        foreach (var cloud in cloudData)
+        // Crée chaque particule du nuage 
+        foreach (var cloud in cloudTemplate)
         {
             BoxView puff = new()
             {
@@ -152,42 +152,46 @@ public partial class ColorSelectionPage : ContentPage
             clouds.Add(puff);
         }
 
-        // 4. Apparition RAPIDE du nuage
+        // Apparition RAPIDE du nuage
         foreach (BoxView cloud in clouds)
         {
             cloud.Opacity = 0.8;
         }
         await Task.Delay(100); // Pause pour voir l'apparition
 
-        // 5. Grossissement LENT du nuage
+        // Grossissement LENT du nuage
         await Task.WhenAll(clouds.Select(cloud => cloud.ScaleToAsync(1.5, 500, Easing.CubicOut)));
         await Task.Delay(200); // Pause pour voir le grossissement
 
-        // 6. La pastille disparaît
+        // La pastille disparaît derrière le nuage
         colorBox.Opacity = 0;
         await Task.Delay(200); // Pause pour voir la disparition de la pastille
 
-        // 7. Déplacement du nuage + grossissement + disparition
+        // Déplacement du nuage + grossissement + disparition
         List<Task> tasks = new();
 
-        double driftX = isLeftSide ? -60 : 60;
-        Random random = new();
-
-        foreach (var cloud in clouds)
-        {
-            double localX = random.NextDouble() * 8 - 4;
-            double localY = random.NextDouble() * 6 - 3;
-
-            double targetScale = 1.5 + random.NextDouble() * 0.4;
-
-            tasks.Add(Task.WhenAll(cloud.TranslateToAsync(cloud.TranslationX + driftX + localX, cloud.TranslationY + localY, 1200, Easing.CubicOut), cloud.ScaleToAsync(targetScale, 1200, Easing.CubicOut), cloud.FadeToAsync(0, 1200, Easing.CubicIn)));
-        }
+        double driftX = isLeftSide ? -120 : 120;
         
-        // 8. Nettoyage
+
+        foreach (BoxView cloud in clouds)
+        {
+            double localX = _random.NextDouble() * 8 - 4;
+            double localY = _random.NextDouble() * 6 - 3;
+
+            double targetScale = 1.5 + _random.NextDouble() * 0.4;
+
+            tasks.Add(Task.WhenAll(cloud.TranslateToAsync(cloud.TranslationX + driftX + localX, cloud.TranslationY + localY, 350, Easing.CubicOut), cloud.ScaleToAsync(targetScale, 1200, Easing.CubicOut), cloud.FadeToAsync(0, 1200, Easing.CubicIn)));
+        }
+
+        await Task.WhenAll(tasks);
+
+        // Nettoyage
         foreach (BoxView cloud in clouds)
         {
             container.Children.Remove(cloud);
         }
+        
+        await Task.Delay(200);
     }
 
     private void GoToGame()
