@@ -9,7 +9,7 @@
 
         <ScrollView>
             <!-- Contenu principal -->
-            <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Center" Spacing="16" Padding="20">
+            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="16" Padding="20">
                 <!-- Cercle + Timer/Nom du joueur -->
                 <Grid WidthRequest="300" HeightRequest="300" HorizontalOptions="Center">
                     <GraphicsView x:Name="GameCanvas" WidthRequest="300" HeightRequest="300" HorizontalOptions="Center" VerticalOptions="Center">
