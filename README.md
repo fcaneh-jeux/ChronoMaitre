@@ -15,12 +15,15 @@ Application mobile développée avec **.NET MAUI** permettant de limiter le temp
 * De 2 à 8 joueurs
 * Couleur personnalisée pour chaque joueur
 * Rotation automatique des tours
+* Carrousel animé des joueurs actifs
 
 ### ⏱️ Gestion du temps
 
 * Temps par tour configurable
+* Banque de temps configurable par joueur
 * Pause / reprise de partie
 * Passage automatique au joueur suivant
+* Temps restant visible en permanence
 
 ### 🎨 Effets visuels
 
@@ -28,6 +31,7 @@ Application mobile développée avec **.NET MAUI** permettant de limiter le temp
 * Glow progressif à l'approche de la fin du tour
 * Pulsation du cercle dans les dernières secondes
 * Changement de couleur selon le joueur actif
+* Animations de transition entre joueurs
 
 ### 🔊 Ambiances sonores
 
@@ -56,12 +60,19 @@ Application mobile développée avec **.NET MAUI** permettant de limiter le temp
 HurryUpDavid
 │
 ├── Models
-│   └── GameSettings
+│   ├── GameSettings
+│   └── GameMode
 │
 ├── Pages
+│   ├── HomePage
 │   ├── SetupPage
+│   ├── TimeBankSetupPage
 │   ├── ColorSelectionPage
-│   └── GamePage
+│   ├── GamePage
+│   └── TimeBankGamePage
+│
+├── Drawables
+│   └── CircleGameDrawable
 │
 ├── Resources
 │   ├── Audios
@@ -79,12 +90,27 @@ HurryUpDavid
 | ColorSelectionPage | Choix des couleurs            |
 | GamePage           | Gestion du timer et des tours |
 | CircleGameDrawable | Dessin et animations          |
+| GameMode           | Type de partie                |
+| HomePage           | Choix du mode de jeu          |
+| TimeBankSetupPage  | Configuration du mode Banque  |
+| TimeBankGamePage   | Gestion du mode Banque Temps  |
 
 ---
 
 # ⚙️ Défis techniques rencontrés
 
-### ⏱️ Gestion du timer
+## ⏱️ Gestion du timer
+
+## 🎠 Animation du carrousel de joueurs
+
+Le mode Banque de Temps utilise un système de carrousel animé permettant de visualiser rapidement le joueur actif et les joueurs suivants.
+
+Travail réalisé sur :
+
+* animations fluides entre les changements de joueur ;
+* gestion dynamique des positions ;
+* adaptation à différentes tailles d'écran ;
+* synchronisation des animations et de l'état de la partie.
 
 Utilisation de :
 
@@ -132,7 +158,7 @@ Plusieurs ambiances sont disponibles :
 
 * Visual Studio 2022
 * Workload .NET MAUI
-* .NET 10 SDK
+* .NET SDK compatible avec la version MAUI utilisée
 
 ## Cloner le projet
 
@@ -150,12 +176,13 @@ Puis lancer le projet depuis Visual Studio.
 
 # 📸 Captures d'écran
 
-🚧 À venir
+📸 Captures à venir
 
-* Configuration de partie
+* Écran d'accueil
+* Configuration d'une partie
 * Sélection des couleurs
-* Écran principal
-* Animation de fin de tour
+* Mode Tour par Tour
+* Mode Banque de Temps
 
 ---
 
@@ -170,7 +197,10 @@ Ce projet m'a permis de pratiquer :
 * 🎮 Gestion d'état applicatif
 * 🧩 Résolution de problèmes et débogage
 * 🎨 Dessin personnalisé avec GraphicsView
-
+* 🎠 Animations et transitions utilisateur
+* 📐 Responsive Design mobile
+* 🤖 Gestion des différences de comportement Windows / Android
+* 🌿 Workflow Git (branches, merge, release)
 ---
 
 # 🤖 Utilisation de l'IA
@@ -192,7 +222,7 @@ Cette démarche reflète une pratique moderne du développement logiciel : savoi
 
 # 📦 Publication Android
 
-L'application est compilée et distribuée sous forme d'APK Android signé.
+L'application a été testée sur Windows ainsi que sur plusieurs appareils Android physiques afin de valider le comportement de l'interface et des animations.
 
 Le projet a nécessité :
 
@@ -209,19 +239,22 @@ L'application est actuellement testée sur Windows et Android.
 
 ## Version actuelle
 
-✅ Gestion des joueurs  
-✅ Timer configurable  
-✅ Ambiances sonores  
-✅ Animations de transition  
+✅ Gestion des joueurs
+✅ Sélection des couleurs
+✅ Timer configurable
+✅ Banque de Temps
+✅ Ambiances sonores
+✅ Animations de transition
 ✅ Publication Android
+✅ Tests sur appareils physiques
 
 ## Améliorations prévues
 
-⬜ Icônes et identité visuelle personnalisées  
-⬜ Vibrations en fin de tour  
-⬜ Sauvegarde des préférences utilisateur  
-⬜ Historique des parties  
-⬜ Publication sur Play Store
+⬜ Vibrations Android
+⬜ Sauvegarde des préférences utilisateur
+⬜ Historique des parties
+⬜ Statistiques de jeu
+⬜ Publication Play Store
 
 ---
 
