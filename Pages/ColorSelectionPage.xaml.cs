@@ -19,9 +19,9 @@ public partial class ColorSelectionPage : ContentPage
         Color.FromArgb("#EEEEEE")   // Blanc cassé (remplace White)
     };
 
-    private List<Grid> _colorContainers = new List<Grid>();
     private List<BoxView> _colorBoxes = new List<BoxView>();
     private List<Task> _animationTasks = new();
+    private bool _gameStarting;
     private readonly Random _random = new();
 
     public ColorSelectionPage(GameSettings gameSettings)
@@ -36,7 +36,6 @@ public partial class ColorSelectionPage : ContentPage
     private void RenderColors()
     {
         ColorsGrid.Children.Clear();
-        _colorContainers.Clear();
         _colorBoxes.Clear();
 
         for (int i = 0; i < _availableColors.Count; i++)
@@ -48,28 +47,29 @@ public partial class ColorSelectionPage : ContentPage
             {
                 WidthRequest = 50,
                 HeightRequest = 50,
-                Margin = new Thickness(5),
+                Margin = new Thickness(2),
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Center,
             };
 
-            BoxView colorBox = new BoxView
+            BoxView colorBox = new()
             {
-                Color = _availableColors[i],
                 WidthRequest = 50,
                 HeightRequest = 50,
                 CornerRadius = 25,
-                BackgroundColor = Colors.Transparent
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.Center,
+                Color = _availableColors[i]
             };
 
             colorContainer.Children.Add(colorBox);
 
             TapGestureRecognizer tapGesture = new TapGestureRecognizer();
             int colorIndex = i;
-            tapGesture.Tapped += (s, e) => OnColorSelected(colorIndex,colorContainer, colorBox);
+            tapGesture.Tapped += (s, e) => OnColorSelected(colorIndex, colorContainer, colorBox);
             colorBox.GestureRecognizers.Add(tapGesture);
 
-            
+
             ColorsGrid.Add(colorContainer, column, row);
         }
     }
@@ -81,6 +81,16 @@ public partial class ColorSelectionPage : ContentPage
 
     private async void OnColorSelected(int colorIndex, Grid colorContainer, BoxView colorBox)
     {
+        if (_gameStarting)
+        {
+            return;
+        }
+
+        if (_selectedColors.Count >= _gameSettings.PlayerCount)
+        {
+            return;
+        }
+
         if (colorIndex < 0 || colorIndex >= _availableColors.Count)
             return;
 
@@ -90,19 +100,22 @@ public partial class ColorSelectionPage : ContentPage
         _selectedColors.Add(selectedColor);
 
         // Animation du nuage
-        Task animationTAsk = AnimateDustExplosion(colorContainer, colorBox, selectedColor);
-        _animationTasks.Add(animationTAsk);
+        Task animationTask = AnimateDustExplosion(colorContainer, colorBox, selectedColor);
+        _animationTasks.Add(animationTask);
 
         _currentPlayerIndex++;
 
         if (_selectedColors.Count == _gameSettings.PlayerCount)
         {
+            _gameStarting = true;
+
+            InstructionLabel.Text = "Préparation de la partie...";
             // Désactive toutes les pastilles restantes
             foreach (var box in _colorBoxes)
             {
                 box.IsEnabled = false;
             }
-            await Task.WhenAll(animationTAsk);
+            await Task.WhenAll(_animationTasks);
             GoToGame();
         }
         else
@@ -116,7 +129,7 @@ public partial class ColorSelectionPage : ContentPage
         // Détermine la direction du déplacement (gauche ou droite) selon le placement dans la grid
         int column = Grid.GetColumn(container);
         bool isLeftSide = column == 0;
-        
+
         // Crée les positions des particules du nuage à venir
         List<BoxView> clouds = new();
 
@@ -146,9 +159,13 @@ public partial class ColorSelectionPage : ContentPage
                 VerticalOptions = LayoutOptions.Center,
                 TranslationX = cloud.x,
                 TranslationY = cloud.y,
-                Opacity = 0
+                Opacity = 0,
+                BackgroundColor = Colors.Transparent
             };
             container.Children.Add(puff);
+
+
+            System.Diagnostics.Debug.WriteLine($"Cloud {cloud.x} {cloud.y}");
             clouds.Add(puff);
         }
 
@@ -164,21 +181,21 @@ public partial class ColorSelectionPage : ContentPage
         await Task.Delay(200); // Pause pour voir le grossissement
 
         // La pastille disparaît derrière le nuage
+        await Task.Delay(50); // Pause pour voir la disparition de la pastille
         colorBox.Opacity = 0;
-        await Task.Delay(200); // Pause pour voir la disparition de la pastille
 
         // Déplacement du nuage + grossissement + disparition
         List<Task> tasks = new();
 
-        double driftX = isLeftSide ? -120 : 120;
-        
+        double driftX = isLeftSide ? -70 : 70;
+
 
         foreach (BoxView cloud in clouds)
         {
-            double localX = _random.NextDouble() * 8 - 4;
-            double localY = _random.NextDouble() * 6 - 3;
+            double localX = _random.NextDouble() * 30 - 15;
+            double localY = _random.NextDouble() * 20 - 10;
 
-            double targetScale = 1.5 + _random.NextDouble() * 0.4;
+            double targetScale = 1.2 + _random.NextDouble() * 1.2;
 
             tasks.Add(Task.WhenAll(cloud.TranslateToAsync(cloud.TranslationX + driftX + localX, cloud.TranslationY + localY, 350, Easing.CubicOut), cloud.ScaleToAsync(targetScale, 1200, Easing.CubicOut), cloud.FadeToAsync(0, 1200, Easing.CubicIn)));
         }
@@ -190,7 +207,7 @@ public partial class ColorSelectionPage : ContentPage
         {
             container.Children.Remove(cloud);
         }
-        
+
         await Task.Delay(200);
     }
 
@@ -200,7 +217,7 @@ public partial class ColorSelectionPage : ContentPage
         {
             Application.Current.Windows[0].Page = new NavigationPage(new GamePage(_gameSettings, _selectedColors));
         }
-        else if(_gameSettings.GameMode == GameMode.TimeBank)
+        else if (_gameSettings.GameMode == GameMode.TimeBank)
         {
             Application.Current.Windows[0].Page = new NavigationPage(new TimeBankGamePage(_gameSettings, _selectedColors));
         }

@@ -17,9 +17,9 @@
             <Grid
                     x:Name="ColorsGrid"
                     HorizontalOptions="Center"
-                    ColumnSpacing="15"
-                    RowSpacing="15"
-                    Padding="10">
+                    ColumnSpacing="8"
+                    RowSpacing="8"
+                    Padding="0">
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
